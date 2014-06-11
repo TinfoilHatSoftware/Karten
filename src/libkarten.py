@@ -73,7 +73,7 @@ class Tile(pygame.sprite.Sprite):
 		del self
 	def get_collide_layers(self):
 		return self.c_layers
-class Karte(object):
+"""class Karte(object):
 	def __init__(self):
 		self.tiles=[]
 		self.tilesets={}
@@ -125,7 +125,7 @@ class Karte(object):
 		self.tilesets[tset_name]=XMLTileSet(tset_name)
 	def remove_tileset(self,tset_name)
 		#this will not delete current tiles from that tileset
-		self.tilesets[tset_name]=None
+		self.tilesets[tset_name]=None"""
 				
 				
 			
