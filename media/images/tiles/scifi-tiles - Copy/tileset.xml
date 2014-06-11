@@ -1,0 +1,12 @@
+<tileset>
+<tile anim="0.xml" play="0"></tile>
+<tile anim="1.xml" play="0"></tile>
+<tile anim="2.xml" play="0"></tile>
+<tile anim="3.xml" play="0"></tile>
+<tile anim="4.xml" play="0"></tile>
+<tile anim="5.xml" play="0"></tile>
+<tile anim="6.xml" play="0"></tile>
+<tile anim="7.xml" play="0"></tile>
+<tile anim="8.xml" play="0"></tile>
+<tile anim="9.xml" play="0"></tile>
+</tileset>

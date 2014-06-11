@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<karte>
+<tileset_definitions>
+<tileset name="scifi-tiles"/>
+</tileset_definitions>
+<entfile_definitions>
+</entfile_definitions>
+<map_tiles>
+<tile tileset="scifi-tiles" index="0" pos="0 0" layer="layer3" collision_layers="layer3 layer4"/>
+</map_tiles>
+</karte>
