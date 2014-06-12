@@ -53,7 +53,6 @@ reqs_update=[]
 current_tile = None
 global tile_buttons
 tile_buttons=[]
-tilesets={}
 global button_imgs
 button_imgs=[]
 counter=0
@@ -79,7 +78,6 @@ layer4_c = []
 layer5_c = []
 selected_tiles=[]
 nontemp_selected_tiles=[]
-tiles=[]
 print(n+"Layer definitions completed.")
 print(n+"Defining global functions.")
 testtile=None	
@@ -94,10 +92,9 @@ def load_tileset():
 	global counter
 	global current_tset
 	folderpath = filedialog.askdirectory()
-	print(folderpath)
 	current_tset=os.path.basename(folderpath)
 	try:
-		tilesets[current_tset]=libkarten.XMLTileSet(folderpath)
+		map_var.load_tileset(current_tset)
 	except:
 		print(n+'Invalid tileset directory!')
 		return
@@ -105,6 +102,8 @@ def load_tileset():
 	list_tsets_box.insert(END,os.path.basename(folderpath))
 def change_tset(spam_eggs):
 	time.sleep(0.05)
+	if len(list_tsets_box.curselection())==0:
+		return
 	selection = list_tsets_box.curselection()
 	current_tset=list_tsets_box.get(selection[0])
 	update_tile_buttons()
@@ -117,7 +116,7 @@ def update_tile_buttons():
 		button.destroy()
 	tile_buttons=[]
 	button_imgs=[]
-	for tile in tilesets[current_tset].tiles:
+	for tile in map_var.get_tiles_from_tileset(current_tset):
 		pygame_image = tile.animation.states[list(tile.animation.states.keys())[0]][0]
 		pil_string_image = pygame.image.tostring(pygame_image,"RGBA")
 		pil_image = PIL.Image.fromstring("RGBA",(pygame_image.get_rect().width,pygame_image.get_rect().height),pil_string_image)
@@ -130,13 +129,13 @@ def update_tile_buttons():
 	counter=0
 def change_tile(event):
 	global current_tile
-	current_tile=tilesets[current_tset].tiles[event.widget.meta_number]
+	current_tile=map_var.get_tile_template(current_tset,event.widget.meta_number)
 def add_tile():
 	mpos_l=[0,0]
 	mpos_l[0],mpos_l[1]=mse
 	mpos_l[0]-=camera_pos[0]
 	mpos_l[1]-=camera_pos[1]
-	tiles.append(libkarten.Tile(current_tile,current_layer,mpos_l,current_collision_layers))
+	map_var.add_tile(current_tile,current_layer,mpos_l,current_collision_layers)
 	print(n+"Tile of type "+str(current_tile)+" added at position "+str(mpos_l)+" on layer "+str(current_layer)+" on collision layers: "+str(current_collision_layers)+".")
 def update_layer():
 	global current_layer_str
@@ -168,8 +167,22 @@ def update_collision_layers():
 			if index+1==5:
 				current_collision_layers.append(layer5_c)
 	print(current_collision_layers)
-		
-		
+def remove_tileset_in_editor():
+	time.sleep(0.05)
+	if len(list_tsets_box.curselection())==0:
+		return
+	selection = list_tsets_box.curselection()[0]
+	selection=list_tsets_box.get(selection)
+	for tile_temp in map_var.get_all_tiles():
+		if tile_temp.tileset_name==selection:
+			map_var.kill_tile(tile_temp)
+	map_var.remove_tileset(selection)
+	nontemp_selected_tiles=[]
+	update_listbox_tilesets()
+def update_listbox_tilesets():
+	list_tsets_box.delete(0, END)
+	for name,tileset in map_var.get_tilesets_dict().items():
+		list_tsets_box.insert(END,name)
 try:
 	screen_width = int(640)
 	screen_height = int(480)
@@ -246,6 +259,8 @@ embed = Frame(root, width=screen_width, height=screen_height)
 embed.grid(row=0,column=2)
 text = ttk.Button(root, text='Load Tileset', command=load_tileset)
 text.grid(row=2,column=2)
+delete_tileset = ttk.Button(root, text='Unload Tileset (this will delete all tile instances from selected tileset)', command=remove_tileset_in_editor)
+delete_tileset.grid(row=3,column=2)
 is_adding_tiles_v=StringVar()
 is_adding_tiles=ttk.Checkbutton(root,text="Add tiles",variable=is_adding_tiles_v)
 is_adding_tiles.grid(row=1,column=4)
@@ -315,8 +330,10 @@ elif responsetext.lower()=="c":
 	try:
 		camera_surface = pygame.surface.Surface((map_width,map_height))
 	except:
-		print("Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
+		print(n+"Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
 		quit()
+	print(n+"Creating Karte map object.")
+	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c])
 	print(n+"Setting up graphics frame.")
 	pygame.display.init()
 	screen = pygame.display.set_mode((screen_width,screen_height))
@@ -336,7 +353,7 @@ while running:
 	except: adding_tiles=0
 	selected_tiles=[]
 	if adding_tiles!=1:
-		for tiley in tiles:
+		for tiley in map_var.get_all_tiles():
 			recty=tiley.rect
 			mpos_l=[0,0]
 			mpos_l[0],mpos_l[1]=mse
@@ -369,8 +386,7 @@ while running:
 		if event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_DELETE:
 				for ntemptile in nontemp_selected_tiles:
-					tiles.remove(ntemptile)
-					ntemptile.tile_kill()
+					map_var.kill_tile(ntemptile)
 				nontemp_selected_tiles=[]
 
 	for actor in reqs_update:
