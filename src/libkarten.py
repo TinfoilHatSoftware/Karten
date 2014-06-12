@@ -73,7 +73,7 @@ class Tile(pygame.sprite.Sprite):
 		del self
 	def get_collide_layers(self):
 		return self.c_layers
-"""class Karte(object):
+class Karte(object):
 	def __init__(self):
 		self.tiles=[]
 		self.tilesets={}
@@ -89,10 +89,10 @@ class Tile(pygame.sprite.Sprite):
 		for adding_tileset in tileset_defs_tag.findall("tileset"):
 			self.tilesets[adding_tileset.get("name")]=XMLTileSet(adding_tileset.get("name"))
 		tilestag=root.findall("map_tiles")[0]
-		for tiles in tilestag.findall("tile")
+		for tiles in tilestag.findall("tile"):
 			c_layers=[]
 			layer_temp=layers_l[int(tiles.get("layer")[6])]
-			for col_layer in tiles.get("collision_layers").split()
+			for col_layer in tiles.get("collision_layers").split():
 				c_layers_temp.append(collisions_l[int(col_layer[6])])
 			tmptiles.append(Tile(self.tilesets[tiles.get("tileset")][int(tiles.get("index"))],layer_temp,(tiles.get(pos).split()[0],tiles.get(pos).split()[1]),c_layers_temp))
 	def update(self,delta):
@@ -123,9 +123,9 @@ class Tile(pygame.sprite.Sprite):
 		return tmp
 	def load_tileset(self,tset_name):
 		self.tilesets[tset_name]=XMLTileSet(tset_name)
-	def remove_tileset(self,tset_name)
+	def remove_tileset(self,tset_name):
 		#this will not delete current tiles from that tileset
-		self.tilesets[tset_name]=None"""
+		self.tilesets[tset_name]=None
 				
 				
 			
