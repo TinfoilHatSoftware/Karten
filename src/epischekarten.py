@@ -93,11 +93,9 @@ def load_tileset():
 	global current_tset
 	folderpath = filedialog.askdirectory()
 	current_tset=os.path.basename(folderpath)
-	try:
-		map_var.load_tileset(current_tset)
-	except:
-		print(n+'Invalid tileset directory!')
-		return
+	
+	map_var.load_tileset(current_tset)
+
 	update_tile_buttons()
 	list_tsets_box.insert(END,os.path.basename(folderpath))
 def change_tset(spam_eggs):
@@ -135,7 +133,22 @@ def add_tile():
 	mpos_l[0],mpos_l[1]=mse
 	mpos_l[0]-=camera_pos[0]
 	mpos_l[1]-=camera_pos[1]
-	map_var.add_tile(current_tile,current_layer,mpos_l,current_collision_layers)
+	c_temp_layers=""
+	for index,layer_svar in enumerate(COL_LAYER_ENABLED):
+		if str(layer_svar.get())=='1':
+			if index+1==1:
+				c_temp_layers+="1 "
+			if index+1==2:
+				c_temp_layers+="2 "
+			if index+1==3:
+				c_temp_layers+="3 "
+			if index+1==4:
+				c_temp_layers+="4 "
+			if index+1==5:
+				c_temp_layers+="5 "
+	if c_temp_layers!="":
+		c_temp_layers=c_temp_layers[:-1]
+	map_var.add_tile(current_tile,current_layer,int(current_layer_str.get()[5]),mpos_l,c_temp_layers)
 	print(n+"Tile of type "+str(current_tile)+" added at position "+str(mpos_l)+" on layer "+str(current_layer)+" on collision layers: "+str(current_collision_layers)+".")
 def update_layer():
 	global current_layer_str
@@ -196,13 +209,13 @@ class cameraScroller(object):
 	def update(self,delta):
 		keys=pygame.key.get_pressed()
 		if keys[pygame.K_LEFT]:
-			camera_pos[0]+=3
+			camera_pos[0]+=10
 		if keys[pygame.K_RIGHT]:
-			camera_pos[0]-=3
+			camera_pos[0]-=10
 		if keys[pygame.K_UP]:
-			camera_pos[1]+=3
+			camera_pos[1]+=10
 		if keys[pygame.K_DOWN]:
-			camera_pos[1]-=3
+			camera_pos[1]-=10
 class VerticalScrolledFrame(Frame):
     """A pure Tkinter scrollable frame that actually works!
     * Use the 'interior' attribute to place widgets inside the scrollable frame
@@ -268,7 +281,7 @@ snap_to_grid_v=IntVar()
 snap_to_grid=ttk.Checkbutton(root,text="Snap to grid",variable=snap_to_grid_v)
 snap_to_grid.grid(row=0,column=4)
 Label(text="Tilesets").grid(row=3,column=0)
-Label(text="Press delete key to delete tiles.").grid(row=1,column=2)
+Label(text="Press delete key to delete tiles. \n Press i to print map xml data to console.").grid(row=1,column=2)
 list_tsets_box=Listbox(root)
 list_tsets_box.grid(row=1,column=0)
 list_tsets_box.bind("<<ListboxSelect>>", change_tset)
@@ -388,6 +401,7 @@ while running:
 				for ntemptile in nontemp_selected_tiles:
 					map_var.kill_tile(ntemptile)
 				nontemp_selected_tiles=[]
+	print(map_var.make_xml())
 
 	for actor in reqs_update:
 		actor.update(delta)

@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <tileset>
-<tile anim="0.xml" play="0"></tile>
-<tile anim="1.xml" play="0"></tile>
-<tile anim="2.xml" play="0"></tile>
-<tile anim="3.xml" play="0"></tile>
-<tile anim="4.xml" play="0"></tile>
-<tile anim="5.xml" play="0"></tile>
-<tile anim="6.xml" play="0"></tile>
-<tile anim="7.xml" play="0"></tile>
-<tile anim="8.xml" play="0"></tile>
-<tile anim="9.xml" play="0"></tile>
+<tile anim="0.xml" play="0" index = "0"></tile>
+<tile anim="1.xml" play="0" index = "1"></tile>
+<tile anim="2.xml" play="0" index = "2"></tile>
+<tile anim="3.xml" play="0" index = "3"></tile>
+<tile anim="4.xml" play="0" index = "4"></tile>
+<tile anim="5.xml" play="0" index = "5"></tile>
+<tile anim="6.xml" play="0" index = "6"></tile>
+<tile anim="7.xml" play="0" index = "7"></tile>
+<tile anim="8.xml" play="0" index = "8"></tile>
+<tile anim="9.xml" play="0" index = "9"></tile>
 </tileset>

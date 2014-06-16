@@ -10,9 +10,12 @@ import pygame
 import os
 import xml.etree.cElementTree as ET
 
+	
+
 class TileTemplate(object):
-	def __init__(self,animation,tileset_name,start_state="off",play_anim=None):
+	def __init__(self,animation,tileset_name,index,start_state="off",play_anim=None):
 		self.tileset_name=tileset_name
+		self.index=index
 		self.animation=animation
 		self.image=self.animation.states[list(self.animation.states.keys())[0]][0]
 		self.rect=self.image.get_rect()
@@ -32,14 +35,18 @@ class XMLTileSet(object):
 				playanim=False
 			else:
 				playanim=True
-			self.tiles.append(TileTemplate(animations.XMLTileAnimation(folder_name,tile.get("anim")),folder_name,start_state="off",play_anim=playanim))
+			self.tiles.append(TileTemplate(animations.XMLTileAnimation(folder_name,tile.get("anim")),folder_name,tile.get("index"),start_state="off",play_anim=playanim))
 		self.xml_tree=None
 		self.xml_tree_root=None
 		print(self.tiles)
 class Tile(pygame.sprite.Sprite):
-	def __init__(self,tiletemplate,layer,pos,collision_layers=[]):
+	def __init__(self,tiletemplate,layer,layer_index,pos,collision_layer_indexes,collision_layers=[]):
 		super(Tile,self).__init__()
 		self.add(layer)
+		self.c_layer_indexes=collision_layer_indexes
+		self.layer=layer
+		self.l_index=layer_index
+		self.index=tiletemplate.index
 		self.tileset_name=tiletemplate.tileset_name
 		self.c_layers=collision_layers
 		self.animation=tiletemplate.animation
@@ -98,15 +105,15 @@ class Karte(object):
 			layer_temp=self.layers_l[int(tiles.get("layer")[6])]
 			for col_layer in tiles.get("collision_layers").split():
 				c_layers_temp.append(self.collisions_l[int(col_layer[6])])
-			tmptiles.append(Tile(self.tilesets[tiles.get("tileset")][int(tiles.get("index"))],layer_temp,(tiles.get(pos).split()[0],tiles.get(pos).split()[1]),c_layers_temp))
+			tmptiles.append(Tile(self.tilesets[tiles.get("tileset")][int(tiles.get("index"))],layer_temp,int(tiles.get("layer")[6]),(tiles.get(pos).split()[0],tiles.get(pos).split()[1]),c_layers_temp))
 	def update(self,delta):
 		for tile in self.tiles:
 			tile.update(delta)
 	def kill_tile(self,tileref):
 		tileref.tile_kill()
 		self.tiles.remove(tileref)		
-	def add_tile(self,tile_template,layer,pos,collision_layers=[]):
-		tile_addition=Tile(tile_template,layer,pos,collision_layers)
+	def add_tile(self,tile_template,layer,layer_index,pos,col_indexes,collision_layers=[]):
+		tile_addition=Tile(tile_template,layer,layer_index,pos,col_indexes,collision_layers)
 		self.tiles.append(tile_addition)
 	def get_tile_template(self,tileset_name,index):
 		return self.tilesets[tileset_name].tiles[index]
@@ -136,6 +143,17 @@ class Karte(object):
 		return self.tiles
 	def get_tilesets_dict(self):
 		return self.tilesets
+	def make_xml(self):
+		tsetdefs=[]
+		tiledefs=[]
+		root=ET.Element("karte")
+		tset_defs=ET.SubElement(root,"tileset_definitions")
+		for tset_name,tset in self.tilesets.items():
+			tsetdefs.append(ET.SubElement(tset_defs,"tileset", name=tset_name))
+		tile_defs=ET.SubElement(root,"map_tiles")
+		for tile in self.tiles:
+			tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
+		return ET.dump(root)
 				
 			
 		
