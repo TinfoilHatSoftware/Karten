@@ -332,16 +332,21 @@ except:
 myclock.tick(fps_limit)
 responsetext = input(n+"Create map or open existing? [reply C for create or O for open.]>>>")
 if responsetext.lower()=="o":
-	pass
+	f_path=input(n+"Map name to open?>>>")
+	print(n+"Creating Karte map object.")
+	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c])
+	camera_surface = pygame.surface.Surface((4800,4800))
+	print(n+"Loading map.")
+	map_var.fromxml(f_path)
+	print(n+"Done.")
+	print(n+"Setting up graphics frame.")
+	pygame.display.init()
+	screen = pygame.display.set_mode((screen_width,screen_height))
+	pygame.display.flip()
 elif responsetext.lower()=="c":
-	try:
-		map_width = int(input(n+"Width of map? [in pixels]>>>"))
-		map_height = int(input(n+"Height of map? [in pixels]>>>"))
-	except:
-		bad_input()
 	print(n+"Creating camera surface.")
 	try:
-		camera_surface = pygame.surface.Surface((map_width,map_height))
+		camera_surface = pygame.surface.Surface((4800,4800))
 	except:
 		print(n+"Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
 		quit()
@@ -360,6 +365,7 @@ else:
 	bad_input()
 print(n+"Setup completed!")
 while running:
+	mse = pygame.mouse.get_pos()
 	delta = myclock.tick(60)
 	try:
 		adding_tiles=int(is_adding_tiles_v.get())
@@ -375,7 +381,6 @@ while running:
 			mpos2=(mpos_l[0],mpos_l[1])
 			if recty.collidepoint(mpos2):
 				selected_tiles.append(tiley)
-	mse = pygame.mouse.get_pos()
 	if snap_to_grid_v.get()==1 and adding_tiles==1:
 		mpos_l=[0,0]
 		mpos_l[0],mpos_l[1]=mse

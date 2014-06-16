@@ -6,6 +6,6 @@
 <entfile_definitions>
 </entfile_definitions>
 <map_tiles>
-<tile tileset="scifi-tiles" index="0" pos="0 0" layer="layer3" collision_layers="layer3 layer4"/>
+<tile tileset="scifi-tiles" index="6" pos="0 0" layer="3" collision_layers="3 4"/>
 </map_tiles>
 </karte>

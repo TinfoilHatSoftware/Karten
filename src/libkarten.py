@@ -83,7 +83,7 @@ class Tile(pygame.sprite.Sprite):
 	def get_collide_layers(self):
 		return self.c_layers
 class Karte(object):
-	def __init__(self,collisions_l,layers_l):
+	def __init__(self,layers_l,collisions_l):
 		self.collisions_l=collisions_l
 		self.layers_l=layers_l
 		self.tiles=[]
@@ -92,20 +92,22 @@ class Karte(object):
 	def fromxml(self,map_name):
 		tmptiles=[]
 		self.name=map_name
-		print("[libkarten]Loading Karte xml mapfile from map directory with name "+str(path)+".")
-		path_to_mapfile=os.path.join("..","media","maps_xml",path,".xml")
+		print("[libkarten]Loading Karte xml mapfile with name "+str(map_name)+".")
+		path_to_mapfile=os.path.join("..","media","maps_xml",map_name+".xml")
 		xml_tree = ET.parse(path_to_mapfile)
-		xml_tree_root = xml_tree.getroot()
+		root = xml_tree.getroot()
 		tileset_defs_tag=root.findall("tileset_definitions")[0]
 		for adding_tileset in tileset_defs_tag.findall("tileset"):
 			self.tilesets[adding_tileset.get("name")]=XMLTileSet(adding_tileset.get("name"))
 		tilestag=root.findall("map_tiles")[0]
 		for tiles in tilestag.findall("tile"):
-			c_layers=[]
-			layer_temp=self.layers_l[int(tiles.get("layer")[6])]
+			layer_temp=self.layers_l[int(tiles.get("layer"))]
+			c_layers_temp=[]
+			c_indexes_temp=""
 			for col_layer in tiles.get("collision_layers").split():
-				c_layers_temp.append(self.collisions_l[int(col_layer[6])])
-			tmptiles.append(Tile(self.tilesets[tiles.get("tileset")][int(tiles.get("index"))],layer_temp,int(tiles.get("layer")[6]),(tiles.get(pos).split()[0],tiles.get(pos).split()[1]),c_layers_temp))
+				c_layers_temp.append(self.collisions_l[int(col_layer)])
+			c_indexes_temp=tiles.get("collision_layers")
+			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer")),(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
 	def update(self,delta):
 		for tile in self.tiles:
 			tile.update(delta)
