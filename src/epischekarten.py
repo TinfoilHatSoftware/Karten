@@ -196,9 +196,6 @@ def update_listbox_tilesets():
 	list_tsets_box.delete(0, END)
 	for name,tileset in map_var.get_tilesets_dict().items():
 		list_tsets_box.insert(END,name)
-def save_map():
-	f = open(os.path.join("..","media","maps_xml",map_name_svar.get()+".xml"), 'wb')
-	f.write(map_var.make_xml())
 try:
 	screen_width = int(640)
 	screen_height = int(480)
@@ -268,7 +265,6 @@ input(n+"Creating windows, please keep the command prompt in view at all times i
 print(n+"Setting up tkinter and pygame SDL environ variables.")
 root = Tk()
 root.wm_title("Epische Karten Map Editor")
-map_name_svar=StringVar()
 current_layer=layer1
 current_layer_str=StringVar()
 current_layer_str.set("layer1")
@@ -285,16 +281,11 @@ snap_to_grid_v=IntVar()
 snap_to_grid=ttk.Checkbutton(root,text="Snap to grid",variable=snap_to_grid_v)
 snap_to_grid.grid(row=0,column=4)
 Label(text="Tilesets").grid(row=3,column=0)
-Label(text="Press delete key to delete tiles.").grid(row=1,column=2)
-save_map_button=ttk.Button(root, text='Save Map', command=save_map)
-save_map_button.grid(row=4,column=0)
-save_map_field=ttk.Entry(root,textvariable=map_name_svar)
-save_map_field.grid(row=5,column=1)
-Label(text="Map name:").grid(row=5,column=0)
+Label(text="Press delete key to delete tiles. \n Press i to print map xml data to console.").grid(row=1,column=2)
 list_tsets_box=Listbox(root)
 list_tsets_box.grid(row=1,column=0)
 list_tsets_box.bind("<<ListboxSelect>>", change_tset)
-tsets_scrollbar = ttk.Scrollbar(root, orient=VERTICAL)
+tsets_scrollbar = Scrollbar(root, orient=VERTICAL)
 tsets_scrollbar.config(command=list_tsets_box.yview)
 tsets_scrollbar.grid(row=1,column=1,sticky='ns')
 tilesets_frame = VerticalScrolledFrame(root, width=screen_width, height = 400)
@@ -344,7 +335,7 @@ if responsetext.lower()=="o":
 	f_path=input(n+"Map name to open?>>>")
 	print(n+"Creating Karte map object.")
 	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c])
-	camera_surface = pygame.surface.Surface((800,800))
+	camera_surface = pygame.surface.Surface((4800,4800))
 	print(n+"Loading map.")
 	map_var.fromxml(f_path)
 	print(n+"Done.")
@@ -355,7 +346,7 @@ if responsetext.lower()=="o":
 elif responsetext.lower()=="c":
 	print(n+"Creating camera surface.")
 	try:
-		camera_surface = pygame.surface.Surface((800,800))
+		camera_surface = pygame.surface.Surface((4800,4800))
 	except:
 		print(n+"Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
 		quit()
@@ -366,10 +357,12 @@ elif responsetext.lower()=="c":
 	screen = pygame.display.set_mode((screen_width,screen_height))
 	pygame.display.flip()
 	print(n+"Initializing camera scroller.")
-	scroller = cameraScroller()	
+	scroller = cameraScroller()
+	
+	
+		
 else:
 	bad_input()
-camera_surface=camera_surface.convert()	
 print(n+"Setup completed!")
 while running:
 	mse = pygame.mouse.get_pos()
@@ -413,6 +406,7 @@ while running:
 				for ntemptile in nontemp_selected_tiles:
 					map_var.kill_tile(ntemptile)
 				nontemp_selected_tiles=[]
+	print(map_var.make_xml())
 
 	for actor in reqs_update:
 		actor.update(delta)
