@@ -94,20 +94,22 @@ class Karte(object):
 		self.name=map_name
 		print("[libkarten]Loading Karte xml mapfile with name "+str(map_name)+".")
 		path_to_mapfile=os.path.join("..","media","maps_xml",map_name+".xml")
-		xml_tree = ET.parse(path_to_mapfile)
+		try:
+			xml_tree = ET.parse(path_to_mapfile)
+		except IOError as e:	return
 		root = xml_tree.getroot()
 		tileset_defs_tag=root.findall("tileset_definitions")[0]
 		for adding_tileset in tileset_defs_tag.findall("tileset"):
 			self.tilesets[adding_tileset.get("name")]=XMLTileSet(adding_tileset.get("name"))
 		tilestag=root.findall("map_tiles")[0]
 		for tiles in tilestag.findall("tile"):
-			layer_temp=self.layers_l[int(tiles.get("layer"))]
+			layer_temp=self.layers_l[int(tiles.get("layer"))-1]
 			c_layers_temp=[]
 			c_indexes_temp=""
 			for col_layer in tiles.get("collision_layers").split():
-				c_layers_temp.append(self.collisions_l[int(col_layer)])
+				c_layers_temp.append(self.collisions_l[int(col_layer)-1])
 			c_indexes_temp=tiles.get("collision_layers")
-			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer")),(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
+			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer"))-1,(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
 	def update(self,delta):
 		for tile in self.tiles:
 			tile.update(delta)

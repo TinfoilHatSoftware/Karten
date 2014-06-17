@@ -352,6 +352,9 @@ if responsetext.lower()=="o":
 	pygame.display.init()
 	screen = pygame.display.set_mode((screen_width,screen_height))
 	pygame.display.flip()
+	update_listbox_tilesets()
+	current_tset=list(map_var.tilesets.keys())[0]
+	change_tset("spam")
 elif responsetext.lower()=="c":
 	print(n+"Creating camera surface.")
 	try:
@@ -364,11 +367,11 @@ elif responsetext.lower()=="c":
 	print(n+"Setting up graphics frame.")
 	pygame.display.init()
 	screen = pygame.display.set_mode((screen_width,screen_height))
-	pygame.display.flip()
-	print(n+"Initializing camera scroller.")
-	scroller = cameraScroller()	
+	pygame.display.flip()	
 else:
 	bad_input()
+print(n+"Initializing camera scroller.")
+scroller = cameraScroller()
 camera_surface=camera_surface.convert()	
 print(n+"Setup completed!")
 while running:
