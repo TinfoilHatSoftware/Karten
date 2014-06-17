@@ -155,7 +155,7 @@ class Karte(object):
 		tile_defs=ET.SubElement(root,"map_tiles")
 		for tile in self.tiles:
 			tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
-		return ET.dump(root)
+		return ET.tostring(root)
 				
 			
 		
