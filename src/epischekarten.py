@@ -18,6 +18,8 @@ print ("""
      |_|""")
 import time
 print(n+"Module time loaded.")
+import daswesen
+print(n+"Module daswesen loaded.")
 import pygame
 print(n+"Module pygame loaded.")
 import PIL.Image,PIL.ImageTk
@@ -416,6 +418,8 @@ while running:
 				for ntemptile in nontemp_selected_tiles:
 					map_var.kill_tile(ntemptile)
 				nontemp_selected_tiles=[]
+			if event.key==pygame.K_SPACE:
+				daswesen.load_wesen("derp",(0,0),[layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 
 	for actor in reqs_update:
 		actor.update(delta)
@@ -445,6 +449,7 @@ while running:
 	except TclError:
 		input(n+"Quit button pressed. Press enter to exit.")
 		sys.exit()
+	
 
 	
 	
