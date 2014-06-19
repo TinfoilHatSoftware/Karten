@@ -345,7 +345,7 @@ responsetext = input(n+"Create map or open existing? [reply C for create or O fo
 if responsetext.lower()=="o":
 	f_path=input(n+"Map name to open?>>>")
 	print(n+"Creating Karte map object.")
-	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c])
+	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 	camera_surface = pygame.surface.Surface((800,800))
 	print(n+"Loading map.")
 	map_var.fromxml(f_path)
@@ -365,7 +365,7 @@ elif responsetext.lower()=="c":
 		print(n+"Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
 		quit()
 	print(n+"Creating Karte map object.")
-	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c])
+	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 	print(n+"Setting up graphics frame.")
 	pygame.display.init()
 	screen = pygame.display.set_mode((screen_width,screen_height))

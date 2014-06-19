@@ -3,8 +3,9 @@
 <tileset_definitions>
 <tileset name="scifi-tiles"/>
 </tileset_definitions>
-<entfile_definitions>
-</entfile_definitions>
+<ents>
+<ent entfile="derp" pos="0 0"></ent>
+</ents>
 <map_tiles>
 <tile tileset="scifi-tiles" index="6" pos="0 0" layer="3" collision_layers="3 4"/>
 </map_tiles>

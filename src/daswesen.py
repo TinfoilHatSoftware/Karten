@@ -16,19 +16,18 @@ class GrafikWesenBase(pygame.sprite.Sprite):
 		self.animation=animation
 		self.image=self.animation.get_frame(initial_graphic_state[0],initial_graphic_state[1])
 		self.rect=self.image.get_rect()
-		self.l_index=draw_layer_index
 		self.add(self.layer)
 		self.state=initial_graphic_state[0]
 		self.frame=initial_graphic_state[1]
-		self.c_layer_indexes=collision_layers_index
 		self.c_layers=collision_layers
 		for c_layer in self.c_layers:
 			c_layer.append(self)
 		self.rect.x=positionxy[0]
 		self.rect.y=positionxy[1]
+		self.is_wesen=True
 	def set_state_and_frame(self,state_name,frame_int):
 		self.image=self.animation.get_frame(state_name,frame_int)
-	def remove(self):
+	def tile_kill(self):
 		for c_layer in self.c_layers:
 			c_layer.remove(self)
 		self.kill()

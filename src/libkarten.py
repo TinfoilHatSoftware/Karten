@@ -6,6 +6,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 import animations
+import daswesen
 import pygame
 import os
 import xml.etree.cElementTree as ET
@@ -83,7 +84,8 @@ class Tile(pygame.sprite.Sprite):
 	def get_collide_layers(self):
 		return self.c_layers
 class Karte(object):
-	def __init__(self,layers_l,collisions_l):
+	def __init__(self,layers_l,collisions_l,update_reqs):
+		self.reqs_update=update_reqs
 		self.collisions_l=collisions_l
 		self.layers_l=layers_l
 		self.tiles=[]
@@ -110,12 +112,15 @@ class Karte(object):
 				c_layers_temp.append(self.collisions_l[int(col_layer)-1])
 			c_indexes_temp=tiles.get("collision_layers")
 			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer"))-1,(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
+		entstag=root.findall("ents")[0]
+		for ent in entstag.findall("ent"):
+			self.tiles.append(daswesen.load_wesen(ent.get("entfile"),(int(ent.get("pos").split()[0]),int(ent.get("pos").split()[1])),self.layers_l,self.collisions_l,self.reqs_update))
 	def update(self,delta):
 		for tile in self.tiles:
 			tile.update(delta)
 	def kill_tile(self,tileref):
 		tileref.tile_kill()
-		self.tiles.remove(tileref)		
+		self.tiles.remove(tileref)
 	def add_tile(self,tile_template,layer,layer_index,pos,col_indexes,collision_layers=[]):
 		tile_addition=Tile(tile_template,layer,layer_index,pos,col_indexes,collision_layers)
 		self.tiles.append(tile_addition)
@@ -150,14 +155,26 @@ class Karte(object):
 	def make_xml(self):
 		tsetdefs=[]
 		tiledefs=[]
+		entdefs=[]
 		root=ET.Element("karte")
 		tset_defs=ET.SubElement(root,"tileset_definitions")
 		for tset_name,tset in self.tilesets.items():
 			tsetdefs.append(ET.SubElement(tset_defs,"tileset", name=tset_name))
 		tile_defs=ET.SubElement(root,"map_tiles")
+		ent_defs=ET.SubElement(root,"ents")
 		for tile in self.tiles:
-			tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
+			iswesen=True
+			try:
+				tile.is_wesen
+			except:
+				iswesen=False
+			if iswesen==True:
+				entdefs.append(ET.SubElement(ent_defs,"ent",entfile=tile.name,pos=str(tile.rect.x)+" "+str(tile.rect.y)))
+			else:
+				tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
+			iswesen=None
 		return ET.tostring(root)
+			
 				
 			
 		

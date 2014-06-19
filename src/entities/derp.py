@@ -18,6 +18,8 @@ import daswesen
 class WesenEnt(daswesen.GrafikWesenBase):
 	def __init__(self,animation,position,layer,collision_layers):
 		self.layer=layer[1]
+		self.name="derp"
+		self.is_wesen=True
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta):
 		print(delta)
