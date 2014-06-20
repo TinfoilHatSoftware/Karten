@@ -81,6 +81,9 @@ def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update
 	if reqs_update_var:
 		reqs_update_var_thing.append(ent)
 	return ent
+def load_wesen_constructor(wesen_name):
+	module = imp.load_source(wesen_name, os.path.join("entities",wesen_name+".py"))
+	return module
 		
 				
 			

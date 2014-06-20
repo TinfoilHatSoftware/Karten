@@ -141,6 +141,8 @@ class Karte(object):
 			if tile.rect.collidepoint(pos):
 				tmp.append(tile)
 		return tmp
+	def load_entdef(self,entname):
+		self.tilesets[entname]=EntTilesetMockup(entname)
 	def load_tileset(self,tset_name):
 		self.tilesets[tset_name]=XMLTileSet(tset_name)
 	def remove_tileset(self,tset_name):
@@ -174,6 +176,14 @@ class Karte(object):
 				tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
 			iswesen=None
 		return ET.tostring(root)
+class EntTilesetMockup(object):
+	def __init__(self,ent_name):
+		ent=daswesen.load_wesen_constructor(ent_name)
+		self.thumb=pygame.image.load(os.path.join("entities","thumbs",ent_name+".png"))
+		self.tiles=[]
+		self.name=ent_name
+		self.tiles.append(ent)
+		self.is_wesen_mockup=True
 			
 				
 			

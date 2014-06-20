@@ -100,12 +100,21 @@ def load_tileset():
 
 	update_tile_buttons()
 	list_tsets_box.insert(END,os.path.basename(folderpath))
+def load_wesen_def():
+	global counter
+	global current_tset
+	folderpath=filedialog.askopenfilename()
+	folderpath=folderpath.replace(".py","")
+	current_tset=os.path.basename(folderpath)
+	map_var.load_entdef(current_tset)
+	list_tsets_box.insert(END,os.path.basename(folderpath))
+	update_tile_buttons()
 def change_tset(spam_eggs):
 	time.sleep(0.05)
 	if len(list_tsets_box.curselection())==0:
 		return
-	selection = list_tsets_box.curselection()
-	current_tset=list_tsets_box.get(selection[0])
+	selection = list_tsets_box.curselection()[0]
+	current_tset=list_tsets_box.get(selection)
 	update_tile_buttons()
 def update_tile_buttons():
 	global counter
@@ -117,7 +126,15 @@ def update_tile_buttons():
 	tile_buttons=[]
 	button_imgs=[]
 	for tile in map_var.get_tiles_from_tileset(current_tset):
-		pygame_image = tile.animation.states[list(tile.animation.states.keys())[0]][0]
+		is_wesen_tset=True
+		try:
+			map_var.tilesets[current_tset].is_wesen_mockup
+		except:
+			is_wesen_tset=False
+		if is_wesen_tset==False:
+			pygame_image = tile.animation.states[list(tile.animation.states.keys())[0]][0]
+		else:
+			pygame_image=map_var.tilesets[current_tset].thumb
 		pil_string_image = pygame.image.tostring(pygame_image,"RGBA")
 		pil_image = PIL.Image.fromstring("RGBA",(pygame_image.get_rect().width,pygame_image.get_rect().height),pil_string_image)
 		button_imgs.append(PIL.ImageTk.PhotoImage(pil_image))
@@ -150,6 +167,14 @@ def add_tile():
 				c_temp_layers+="5 "
 	if c_temp_layers!="":
 		c_temp_layers=c_temp_layers[:-1]
+	is_wesen_tset=True
+	try:
+		map_var.tilesets[current_tset].is_wesen_mockup
+	except:
+		is_wesen_tset=False
+	if is_wesen_tset:
+		map_var.tiles.append(daswesen.load_wesen(map_var.tilesets[current_tset].name,(int(mpos_l[0]),int(mpos_l[1])),map_var.layers_l,map_var.collisions_l,map_var.reqs_update))
+		return
 	map_var.add_tile(current_tile,current_layer,int(current_layer_str.get()[5]),mpos_l,c_temp_layers)
 	print(n+"Tile of type "+str(current_tile)+" added at position "+str(mpos_l)+" on layer "+str(current_layer)+" on collision layers: "+str(current_collision_layers)+".")
 def update_layer():
@@ -278,6 +303,8 @@ embed = Frame(root, width=screen_width, height=screen_height)
 embed.grid(row=0,column=2)
 text = ttk.Button(root, text='Load Tileset', command=load_tileset)
 text.grid(row=2,column=2)
+text2 = ttk.Button(root, text='Load Entity Definition', command=load_wesen_def)
+text2.grid(row=5,column=2)
 delete_tileset = ttk.Button(root, text='Unload Tileset (this will delete all tile instances from selected tileset)', command=remove_tileset_in_editor)
 delete_tileset.grid(row=3,column=2)
 is_adding_tiles_v=StringVar()
@@ -374,7 +401,7 @@ else:
 	bad_input()
 print(n+"Initializing camera scroller.")
 scroller = cameraScroller()
-camera_surface=camera_surface.convert()	
+camera_surface=camera_surface.convert()
 print(n+"Setup completed!")
 while running:
 	mse = pygame.mouse.get_pos()
@@ -439,9 +466,20 @@ while running:
 	screen.blit(camera_surface,(camera_pos[0],camera_pos[1]))
 	if adding_tiles==1:
 		try:
-			ctile_rect=current_tile.image.get_rect()
-			ctile_rect.x,ctile_rect.y=mse
-			screen.blit(current_tile.image,ctile_rect)
+			is_wesen_mockup=True
+			try:
+				map_var.tilesets[current_tset].is_wesen_mockup
+			except:
+				is_wesen_mockup=False
+			if is_wesen_mockup==False:
+				ctile_rect=current_tile.image.get_rect()
+				ctile_rect.x,ctile_rect.y=mse
+				screen.blit(current_tile.image,ctile_rect)
+			else:
+				ctile_rect=map_var.tilesets[current_tset].thumb.get_rect()
+				ctile_rect.x,ctile_rect.y=mse
+				screen.blit(map_var.tilesets[current_tset].thumb,ctile_rect)
+				
 		except AttributeError: pass
 	pygame.display.flip()
 	try:
