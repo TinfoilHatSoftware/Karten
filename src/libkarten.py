@@ -98,7 +98,7 @@ class Karte(object):
 		path_to_mapfile=os.path.join("..","media","maps_xml",map_name+".xml")
 		try:
 			xml_tree = ET.parse(path_to_mapfile)
-		except IOError as e:	return
+		except IOError as e: return
 		root = xml_tree.getroot()
 		tileset_defs_tag=root.findall("tileset_definitions")[0]
 		for adding_tileset in tileset_defs_tag.findall("tileset"):
@@ -142,7 +142,7 @@ class Karte(object):
 				tmp.append(tile)
 		return tmp
 	def load_entdef(self,entname):
-		self.tilesets[entname]=EntTilesetMockup(entname)
+		self.tilesets[entname.replace(".py","")]=EntTilesetMockup(entname)
 	def load_tileset(self,tset_name):
 		self.tilesets[tset_name]=XMLTileSet(tset_name)
 	def remove_tileset(self,tset_name):

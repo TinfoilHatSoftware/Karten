@@ -94,22 +94,35 @@ def load_tileset():
 	global counter
 	global current_tset
 	folderpath = filedialog.askdirectory()
-	current_tset=os.path.basename(folderpath)
-	
-	map_var.load_tileset(current_tset)
+	tset=os.path.basename(folderpath)
+	try:
+		map_var.load_tileset(tset)
+	except IOError as e:
+		print(n+"Invalid tileset directory!")
+		return
 
 	update_tile_buttons()
 	list_tsets_box.insert(END,os.path.basename(folderpath))
+	if current_tset=="":
+		current_tset=os.path.basename(folderpath)
 def load_wesen_def():
 	global counter
 	global current_tset
+	
 	folderpath=filedialog.askopenfilename()
 	folderpath=folderpath.replace(".py","")
-	current_tset=os.path.basename(folderpath)
-	map_var.load_entdef(current_tset)
-	list_tsets_box.insert(END,os.path.basename(folderpath))
+	tset=os.path.basename(folderpath)
+	try:
+		map_var.load_entdef(tset)
+	except IOError:
+		print(n+"Invalid/nonexistent entity definition!")
+		return
 	update_tile_buttons()
+	list_tsets_box.insert(END,os.path.basename(folderpath))
+	if current_tset=="":
+		current_tset=os.path.basename(folderpath)
 def change_tset(spam_eggs):
+	global current_tset
 	time.sleep(0.05)
 	if len(list_tsets_box.curselection())==0:
 		return
