@@ -1,4 +1,4 @@
-#  netwerk.py
+#  netwerks.py
 #  
 #  Copyright 2014 Jacob Swart
 #
@@ -9,11 +9,41 @@ from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 from os.path import join as pathjoin
-n='[netwerk server-side]'
-PORT=int(input(n+"Port for server?>>>"))
-
+from twisted.internet.protocol import Protocol, ClientFactory
+from sys import stdout
+n='[netwerks]'
+PORT=int(input(n+"Port?>>>"))
+mode=input(n+"Mode? S=server, C=client>>>")
+if mode.lower()=="s":
+	mode='server'
+elif mode.lower()=="c":
+	mode='client'
+else:
+	print(n+"Invalid response. Quitting.")
+	quit()
+if mode=='client':
+	HOST=input(n+"Host IP?>>>")
 def makebytes(string_var):
 	return string_var.encode('utf8')
+class GameClientProtocol(LineReceiver):
+	def __init__(self):
+		pass
+    def	lineReceived(self, line):
+        stdout.write(str(line.decode('utf8')))
+
+class GameClientFactory(ClientFactory):
+    def startedConnecting(self, connector):
+        print ('Connecting...')
+
+    def buildProtocol(self, addr):
+        print ('Connected.')
+        return GameClientProtocol()
+
+    def clientConnectionLost(self, connector, reason):
+        print ('Lost connection.  Reason:', reason)
+
+    def clientConnectionFailed(self, connector, reason):
+        print ('Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
 
 	def __init__(self, users, addr):
@@ -24,6 +54,7 @@ class GameServerProtocol(LineReceiver):
 
 	def connectionMade(self):
 		print(n+"Connection made from client at "+str(self.addr))
+		self.sendLine(makebytes('CONNECTED'))
 	def connectionLost(self, reason):
 		if self.username in self.users:
 			del self.users[self.username]
@@ -69,6 +100,8 @@ class GameServerFactory(Factory):
 	def buildProtocol(self, addr):
 		return GameServerProtocol(self.users,addr)
 
-
-reactor.listenTCP(PORT, GameServerFactory())
+if mode=='server':
+	reactor.listenTCP(PORT, GameServerFactory())
+if mode=='client':
+	reactor.connectTCP(HOST,PORT,GameClientFactory())
 reactor.run()
