@@ -13,17 +13,6 @@ import os.path
 import time
 from twisted.internet.protocol import Protocol, ClientFactory
 n='[netwerks]'
-PORT=int(input(n+"Port?>>>"))
-mode=input(n+"Mode? S=server, C=client>>>")
-if mode.lower()=="s":
-	mode='server'
-elif mode.lower()=="c":
-	mode='client'
-else:
-	print(n+"Invalid response. Quitting.")
-	quit()
-if mode=='client':
-	HOST=input(n+"Host IP?>>>")
 def makebytes(string_var):
 	return string_var.encode('utf8')
 class GameClientProtocol(LineReceiver):
@@ -67,8 +56,8 @@ class GameClientProtocol(LineReceiver):
 		self.mappath=pathjoin("..","media","maps_xml",self.mapname+".xml")
 		self.state='RUNNING'
 	def handle_RUNNING(self, line):
-		print(line)
-		self.sendLine(makebytes(line.decode('utf8')+"derp"))
+		self.sendLine(self.sync_send)
+		self.sync_recv=line
 	def	lineReceived(self, line):
 		print('[netwerks(debugger)]Recv\'d line:'+line.decode('utf8'))
 		print('[netwerks(debugger)]Current state is '+str(self.state))
@@ -155,14 +144,11 @@ class GameServerProtocol(LineReceiver):
 
 class GameServerFactory(Factory):
 
-	def __init__(self):
+	def __init__(self,mapname):
 		self.users={}
+		self.mapname=mapname
 
 	def buildProtocol(self, addr):
-		return GameServerProtocol(self.users,addr,'test_map')
+		return GameServerProtocol(self.users,addr,self.mapname)
 
-if mode=='server':
-	reactor.listenTCP(PORT, GameServerFactory())
-if mode=='client':
-	reactor.connectTCP(HOST,PORT,GameClientFactory())
-reactor.run()
+

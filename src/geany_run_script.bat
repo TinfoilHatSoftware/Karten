@@ -1,4 +1,4 @@
-python "netwerk.py"
+python "nettest.py"
 
 pause
 del "%0"

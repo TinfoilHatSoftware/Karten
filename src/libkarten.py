@@ -6,6 +6,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 import animations
+import threading
 import daswesen
 import pygame
 import os
