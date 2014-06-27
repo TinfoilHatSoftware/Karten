@@ -9,8 +9,9 @@ from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 from os.path import join as pathjoin
+import os.path
+import time
 from twisted.internet.protocol import Protocol, ClientFactory
-from sys import stdout
 n='[netwerks]'
 PORT=int(input(n+"Port?>>>"))
 mode=input(n+"Mode? S=server, C=client>>>")
@@ -27,34 +28,88 @@ def makebytes(string_var):
 	return string_var.encode('utf8')
 class GameClientProtocol(LineReceiver):
 	def __init__(self):
-		pass
-    def	lineReceived(self, line):
-        stdout.write(str(line.decode('utf8')))
-
+		self.state='SETNAME'
+		self.mapname=''
+		self.username=''
+		self.maptext=''
+	def connectionMade(self):
+		print(n+'Connection  protocol fully initialized.')
+	def handle_SETNAME(self,line):
+		if line.decode('utf8')=='ACK_LOGIN':
+			self.state='GET_MAP_NAME'
+			self.username=self.nametmp
+			self.nametmp=None
+			print(n+"Username successfully set to "+str(self.username))
+			self.sendLine(b'GO')
+			return
+		elif line.decode('utf8')=='TAKEN':
+			print(n+"Username taken.")
+		self.nametmp=input(n+'Username?>>>')
+		self.sendLine(makebytes(self.nametmp))
+		print(n+'Requested username as specified. Waiting for response from server.')
+	def handle_GET_MAP_NAME(self, line):
+		self.mapname=line.decode('utf8')
+		self.state="GET_MAP"
+		self.sendLine(self.mapname.encode('utf8'))
+	def handle_GET_MAP(self, line):
+		if os.path.isfile(pathjoin("..","media","maps_xml",self.mapname+".xml")):
+			print(n+'Server map already downloaded.')
+			self.mappath=pathjoin("..","media","maps_xml",self.mapname+".xml")
+			self.sendLine(b'GOT_MAPS')
+			self.state='RUNNING'
+			self.sendLine(b'RUNNING')
+			return
+		self.sendLine(makebytes(self.mapname))
+		self.state='RECV_MAP'
+	def handle_RECV_MAP(self, line):
+		fp=open(pathjoin("..","media","maps_xml",self.mapname+".xml"),'w')
+		fp.write(line)
+		self.mappath=pathjoin("..","media","maps_xml",self.mapname+".xml")
+		self.state='RUNNING'
+	def handle_RUNNING(self, line):
+		print(line)
+		self.sendLine(makebytes(line.decode('utf8')+"derp"))
+	def	lineReceived(self, line):
+		print('[netwerks(debugger)]Recv\'d line:'+line.decode('utf8'))
+		print('[netwerks(debugger)]Current state is '+str(self.state))
+		if line.decode('utf8')=='MORE_MAPS':
+			self.state=='GET_MAP_NAME'
+			return
+		if self.state=='SETNAME':
+			self.handle_SETNAME(line)
+		elif self.state=='GET_MAP_NAME':
+			self.handle_GET_MAP_NAME(line)
+		elif self.state=='RECV_MAP':
+			self.handle_RECV_MAP(line)
+		elif self.state=='RUNNING':
+			self.handle_RUNNING(line)
+		elif self.state=='GET_MAP':
+			self.handle_GET_MAP(line)
 class GameClientFactory(ClientFactory):
     def startedConnecting(self, connector):
-        print ('Connecting...')
+        print (n+'Connecting...')
 
     def buildProtocol(self, addr):
-        print ('Connected.')
+        print (n+'Connected.')
         return GameClientProtocol()
 
     def clientConnectionLost(self, connector, reason):
-        print ('Lost connection.  Reason:', reason)
+        print (n+'Lost connection.  Reason:', reason)
 
     def clientConnectionFailed(self, connector, reason):
-        print ('Connection failed. Reason:', reason)
+        print (n+'Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
 
-	def __init__(self, users, addr):
+	def __init__(self, users, addr,mapname):
 		self.addr=addr
 		self.users = users
 		self.username = None
+		self.mapname=mapname
 		self.state = "LOGIN"
 
 	def connectionMade(self):
 		print(n+"Connection made from client at "+str(self.addr))
-		self.sendLine(makebytes('CONNECTED'))
+		self.sendLine(b'CONNECTED')
 	def connectionLost(self, reason):
 		if self.username in self.users:
 			del self.users[self.username]
@@ -66,7 +121,7 @@ class GameServerProtocol(LineReceiver):
 		self.sendLine(makebytes('ACK_LOGIN'))
 		self.username = name.decode('utf8')
 		self.users[name] = self
-		self.state = "GET_MAP"
+		self.state = "GET_MAP_NAME"
 		print(n+"Connection at address "+str(self.addr)+" set username to "+"'"+str(self.username)+"'")
 	def handle_GET_MAP(self,line):
 		if line.decode('utf8')=="GOT_MAPS":
@@ -75,19 +130,25 @@ class GameServerProtocol(LineReceiver):
 			return
 		try:
 			self.sendLine(makebytes(str(open(pathjoin("..","media","maps_xml",line.decode('utf8')+'.xml')).read())))
-			print(n+"Connection with name "+str(self.username)+ "requested and recieved valid mapfile named "+str(line.decode('utf8')))
+			print(n+"Connection with name "+str(self.username)+ " requested and recieved valid mapfile named "+str(line.decode('utf8')))
 		except IOError:
 			self.sendLine(makebytes('BAD_MAPNAME'))
 			print(n+"Connection with name "+str(self.username)+ " requested invalid map "+str(line.decode('utf8')))
+			time.sleep(5)
 	def handle_RUNNING(self,line):
-		for name, protocol in self.users.iteritems():
+		for name, protocol in self.users.items():
 			if protocol != self:
 				protocol.sendLine(makebytes(self.username+" ")+line)
+	def handle_GET_MAP_NAME(self,line):
+		self.sendLine(makebytes(self.mapname))
+		self.state="GET_MAP"
 	def lineReceived(self, line):
 		if self.state == "LOGIN":
 			self.handle_LOGIN(line)
 		elif self.state=="GET_MAP":
 			self.handle_GET_MAP(line)
+		elif self.state=="GET_MAP_NAME":
+			self.handle_GET_MAP_NAME(line)
 		else:
 			self.handle_RUNNING(line)
 
@@ -98,7 +159,7 @@ class GameServerFactory(Factory):
 		self.users={}
 
 	def buildProtocol(self, addr):
-		return GameServerProtocol(self.users,addr)
+		return GameServerProtocol(self.users,addr,'test_map')
 
 if mode=='server':
 	reactor.listenTCP(PORT, GameServerFactory())
