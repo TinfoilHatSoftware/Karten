@@ -7,6 +7,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 #
 #
+#DO NOT UNCOMMENT THE FOLLOWING LINES. They are directives to the entity loader and must remain commented to be effective.
 #BEGIN DIRECTIVES
 #DIRECTIVE ANIMATION mech_tan_resized
 #DIRECTIVE POSITION ;

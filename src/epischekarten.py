@@ -18,6 +18,8 @@ print ("""
      |_|""")
 import time
 print(n+"Module time loaded.")
+import platform
+print(n+"Module platform loaded.")
 import daswesen
 print(n+"Module daswesen loaded.")
 import pygame
@@ -43,8 +45,8 @@ print(n+"Module sys loaded.")
 print(n+"Defining global variables.")
 map_width = 0
 map_height = 0
-screen_width = 0
-screen_height = 0
+screen_width = 640
+screen_height = 480
 camera_surface = None
 camera_pos = [0,0]
 myclock = None
@@ -371,7 +373,18 @@ for text, mode, row in COLLISION_LAYERS:
 	b.grid(row=row+1,column=5)
 root.update()
 os.environ['SDL_WINDOWID'] = str(embed.winfo_id())
-os.environ['SDL_VIDEODRIVER'] = 'windib'
+if platform.system()=="Windows":
+	print(n+"Detected Windows platform, using SDL_VIDEODRIVER windib")
+	os.environ['SDL_VIDEODRIVER'] = 'windib'
+elif platform.system()=="Linux":
+	print(n+"Detected Linux platform, using SDL_VIDEODRIVER x11")
+	os.environ['SDL_VIDEODRIVER']='x11'
+elif platform.system()=="Darwin":
+	print(n+"Detected Darwin platform, using SDL_VIDEODRIVER x11")
+	os.environ['SDL_VIDEODRIVER']='x11'
+else:
+	print(n+"Unknown platform, hoping x11 is used and trying SDL_VIDEODRIVER x11")
+	os.environ['SDL_VIDEODRIVER']='x11'
 print(n+"Done.")
 print(n+"Initializing pygame.time.Clock object.")
 myclock = pygame.time.Clock()
@@ -391,8 +404,11 @@ if responsetext.lower()=="o":
 	map_var.fromxml(f_path)
 	print(n+"Done.")
 	print(n+"Setting up graphics frame.")
+	root.update()
 	pygame.display.init()
+	root.update()
 	screen = pygame.display.set_mode((screen_width,screen_height))
+	root.update()
 	pygame.display.flip()
 	update_listbox_tilesets()
 	current_tset=list(map_var.tilesets.keys())[0]

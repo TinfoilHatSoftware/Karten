@@ -6,6 +6,8 @@ apt-get -y install python3-setuptools
 apt-get -y install python3-tk
 apt-get -y install swig
 apt-get -y install python3-twisted
+apt-get -y install g++
+easy_install3 distribute
 easy_install3 pip
 easy_install3 twisted
 pip3 install twisted
