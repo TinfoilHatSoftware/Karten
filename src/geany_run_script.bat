@@ -1,4 +1,4 @@
-python "nettest.py"
+python "epischekarten.py"
 
 pause
 del "%0"

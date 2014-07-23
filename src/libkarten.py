@@ -116,6 +116,7 @@ class Karte(object):
 		entstag=root.findall("ents")[0]
 		for ent in entstag.findall("ent"):
 			self.tiles.append(daswesen.load_wesen(ent.get("entfile"),(int(ent.get("pos").split()[0]),int(ent.get("pos").split()[1])),self.layers_l,self.collisions_l,self.reqs_update))
+			self.tilesets[ent.get("entfile").replace(".py","")]=EntTilesetMockup(ent.get("entfile"))
 	def update(self,delta):
 		for tile in self.tiles:
 			tile.update(delta)
@@ -162,7 +163,13 @@ class Karte(object):
 		root=ET.Element("karte")
 		tset_defs=ET.SubElement(root,"tileset_definitions")
 		for tset_name,tset in self.tilesets.items():
-			tsetdefs.append(ET.SubElement(tset_defs,"tileset", name=tset_name))
+			is_wesen_tset=True
+			try:
+				tset.is_wesen_mockup
+			except:
+				is_wesen_tset=False
+			if not is_wesen_tset:
+				tsetdefs.append(ET.SubElement(tset_defs,"tileset", name=tset_name))
 		tile_defs=ET.SubElement(root,"map_tiles")
 		ent_defs=ET.SubElement(root,"ents")
 		for tile in self.tiles:

@@ -28,4 +28,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			self.rect.x+=1
 	def go(self):
 		self.going=True
+	def get_ent_rect(self):
+		return self.rect
+	def set_self_rect(self,rect):
+		self.rect=rect
 		

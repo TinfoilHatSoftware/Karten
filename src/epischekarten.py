@@ -59,10 +59,10 @@ global tile_buttons
 tile_buttons=[]
 global button_imgs
 button_imgs=[]
+global counter
 counter=0
 global current_tset
 current_tset=''
-global counter
 global current_tile
 current_tile=None
 global current_layer
@@ -102,15 +102,13 @@ def load_tileset():
 	except IOError as e:
 		print(n+"Invalid tileset directory!")
 		return
-
-	update_tile_buttons()
 	list_tsets_box.insert(END,os.path.basename(folderpath))
-	if current_tset=="":
-		current_tset=os.path.basename(folderpath)
+	current_tset=tset
+	print(n+"Set current tileset to "+current_tset+".")
+	update_tile_buttons()
 def load_wesen_def():
 	global counter
 	global current_tset
-	
 	folderpath=filedialog.askopenfilename()
 	folderpath=folderpath.replace(".py","")
 	tset=os.path.basename(folderpath)
@@ -399,7 +397,6 @@ if responsetext.lower()=="o":
 	f_path=input(n+"Map name to open?>>>")
 	print(n+"Creating Karte map object.")
 	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
-	camera_surface = pygame.surface.Surface((800,800))
 	print(n+"Loading map.")
 	map_var.fromxml(f_path)
 	print(n+"Done.")
@@ -414,12 +411,6 @@ if responsetext.lower()=="o":
 	current_tset=list(map_var.tilesets.keys())[0]
 	change_tset("spam")
 elif responsetext.lower()=="c":
-	print(n+"Creating camera surface.")
-	try:
-		camera_surface = pygame.surface.Surface((800,800))
-	except:
-		print(n+"Unexpected fatal error while creating camera surface:", sys.exc_info()[0])
-		quit()
 	print(n+"Creating Karte map object.")
 	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 	print(n+"Setting up graphics frame.")
@@ -430,7 +421,6 @@ else:
 	bad_input()
 print(n+"Initializing camera scroller.")
 scroller = cameraScroller()
-camera_surface=camera_surface.convert()
 print(n+"Setup completed!")
 while running:
 	mse = pygame.mouse.get_pos()
@@ -479,20 +469,49 @@ while running:
 
 	for actor in reqs_update:
 		actor.update(delta)
-	camera_surface.fill((128,128,128))
 	screen.fill((0,0,0))
-	layer1.draw(camera_surface)
-	layer2.draw(camera_surface)
-	layer3.draw(camera_surface)
-	layer4.draw(camera_surface)
-	layer5.draw(camera_surface)
+	oldrects={}
+	for r in list(layer1):
+		oldrects[r]=(r.rect.x,r.rect.y)
+		r.rect.x+=camera_pos[0]
+		r.rect.y+=camera_pos[1]
+	for r in list(layer2):
+		oldrects[r]=(r.rect.x,r.rect.y)
+		r.rect.x+=camera_pos[0]
+		r.rect.y+=camera_pos[1]
+	for r in list(layer3):
+		oldrects[r]=(r.rect.x,r.rect.y)
+		r.rect.x+=camera_pos[0]
+		r.rect.y+=camera_pos[1]
+	for r in list(layer4):
+		oldrects[r]=(r.rect.x,r.rect.y)
+		r.rect.x+=camera_pos[0]
+		r.rect.y+=camera_pos[1]
+	for r in list(layer5):
+		oldrects[r]=(r.rect.x,r.rect.y)
+		r.rect.x+=camera_pos[0]
+		r.rect.y+=camera_pos[1]
+	layer1.draw(screen)
+	layer2.draw(screen)
+	layer3.draw(screen)
+	layer4.draw(screen)
+	layer5.draw(screen)
+	for r in list(layer1):
+		r.rect.x,r.rect.y=oldrects[r]
+	for r in list(layer2):
+		r.rect.x,r.rect.y=oldrects[r]
+	for r in list(layer3):
+		r.rect.x,r.rect.y=oldrects[r]
+	for r in list(layer4):
+		r.rect.x,r.rect.y=oldrects[r]
+	for r in list(layer5):
+		r.rect.x,r.rect.y=oldrects[r]
 	if adding_tiles==1:
 		nontemp_selected_tiles=[]
 	for tilentemp in nontemp_selected_tiles:
-		pygame.draw.rect(camera_surface,(0,255,0,30),tilentemp.rect,2)
+		pygame.draw.rect(screen,(0,255,0,30),(tilentemp.rect.x+camera_pos[0],tilentemp.rect.y+camera_pos[1],tilentemp.rect.width,tilentemp.rect.height),2)
 	for tiles_s_temp in selected_tiles:
-		pygame.draw.rect(camera_surface,(255,0,0,30),tiles_s_temp.rect,1)
-	screen.blit(camera_surface,(camera_pos[0],camera_pos[1]))
+		pygame.draw.rect(screen,(255,0,0,30),(tiles_s_temp.rect.x+camera_pos[0],tiles_s_temp.rect.y+camera_pos[1],tiles_s_temp.rect.width,tiles_s_temp.rect.height),1)
 	if adding_tiles==1:
 		try:
 			is_wesen_mockup=True
