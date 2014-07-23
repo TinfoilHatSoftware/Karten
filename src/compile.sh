@@ -1,1 +1,1 @@
-python3.2 ./compileapp.py build
+python ./compileapp.py build
