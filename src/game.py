@@ -70,8 +70,7 @@ class Game(object):
 			for e in pygame.event.get():
 				if e.type == pygame.QUIT:
 					self.running = False
-					pygame.display.quit()
-			self.game_code.update(delta,self.c_map)
+			self.game_code.update(delta,self.c_map,self)
 			for ent in self.reqs_update:
 				ent.update(delta)
 			self.layer1.draw(self.screen)
@@ -80,6 +79,30 @@ class Game(object):
 			self.layer4.draw(self.screen)
 			self.layer5.draw(self.screen)
 			pygame.display.flip()
+		print(self.n+"Runloop stopped.")
+	def change_map(self,map_name):
+		print(self.n+"Changing map to "+map_name+".")
+		self.layer1 = pygame.sprite.Group()
+		self.layer2 = pygame.sprite.Group()
+		self.layer3 = pygame.sprite.Group()
+		self.layer4 = pygame.sprite.Group()
+		self.layer5 = pygame.sprite.Group()
+		self.layer1_c = []
+		self.layer2_c = []
+		self.layer3_c = []
+		self.layer4_c = []
+		self.layer5_c = []
+		self.reqs_update=[]
+		try:
+			if self.c_map!=None:
+				self.c_map.uninitialize(self.c_map)
+				self.c_map=None
+		except NameError as e:
+			pass
+		self.initial_map=map_name
+	def stop(self):
+		self.running=False
+		
 		
 		
 		
