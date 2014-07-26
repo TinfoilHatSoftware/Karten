@@ -15,9 +15,9 @@ class Game(object):
 		self.fp.seek(0)
 		for line in self.fp.readlines():
 			if line.split()[0]=='resolution':
-				xres,yres=line.split('resolution', 1)[1].strip('\n').split()
+				self.xres,self.yres=line.split('resolution', 1)[1].strip('\n').split()
 		self.fp.seek(0)
-		self.screen=pygame.display.set_mode((int(xres),int(yres)))
+		self.screen=pygame.display.set_mode((int(self.xres),int(self.yres)))
 		self.layer1 = pygame.sprite.Group()
 		self.layer2 = pygame.sprite.Group()
 		self.layer3 = pygame.sprite.Group()
@@ -28,6 +28,7 @@ class Game(object):
 		self.layer3_c = []
 		self.layer4_c = []
 		self.layer5_c = []
+		self.locking=False
 		self.reqs_update=[]
 	def load(self):
 		self.fp.seek(0)
@@ -52,9 +53,12 @@ class Game(object):
 				lineremainder=line.split('initial_map',1)[1]
 				self.initial_map=lineremainder[1:].strip('\n')
 		self.fp.seek(0)
+		self.camera_pos=(0,0)
 		print(self.n+'Done.')
 	def run(self):
 		print(self.n+'Running.')
+		self.yres=int(self.yres)
+		self.xres=int(self.xres)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
 		self.c_map.fromxml(self.initial_map)
 		for ent in self.reqs_update:
@@ -72,12 +76,45 @@ class Game(object):
 					self.running = False
 			self.game_code.update(delta,self.c_map,self)
 			for ent in self.reqs_update:
-				ent.update(delta)
+				ent.update(delta,self)
+			oldrects={}
+			if self.locking==True:
+				self.camera_pos=(-self.entrectref().center[0]+self.xres/2,-self.entrectref().center[1]+self.yres/2)
+			for r in list(self.layer1):
+				oldrects[r]=(r.rect.x,r.rect.y)
+				r.rect.x+=self.camera_pos[0]
+				r.rect.y+=self.camera_pos[1]
+			for r in list(self.layer2):
+				oldrects[r]=(r.rect.x,r.rect.y)
+				r.rect.x+=self.camera_pos[0]
+				r.rect.y+=self.camera_pos[1]
+			for r in list(self.layer3):
+				oldrects[r]=(r.rect.x,r.rect.y)
+				r.rect.x+=self.camera_pos[0]
+				r.rect.y+=self.camera_pos[1]
+			for r in list(self.layer4):
+				oldrects[r]=(r.rect.x,r.rect.y)
+				r.rect.x+=self.camera_pos[0]
+				r.rect.y+=self.camera_pos[1]
+			for r in list(self.layer5):
+				oldrects[r]=(r.rect.x,r.rect.y)
+				r.rect.x+=self.camera_pos[0]
+				r.rect.y+=self.camera_pos[1]
 			self.layer1.draw(self.screen)
 			self.layer2.draw(self.screen)
 			self.layer3.draw(self.screen)
 			self.layer4.draw(self.screen)
 			self.layer5.draw(self.screen)
+			for r in list(self.layer1):
+				r.rect.x,r.rect.y=oldrects[r]
+			for r in list(self.layer2):
+				r.rect.x,r.rect.y=oldrects[r]
+			for r in list(self.layer3):
+				r.rect.x,r.rect.y=oldrects[r]
+			for r in list(self.layer4):
+				r.rect.x,r.rect.y=oldrects[r]
+			for r in list(self.layer5):
+				r.rect.x,r.rect.y=oldrects[r]
 			pygame.display.flip()
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
@@ -102,6 +139,13 @@ class Game(object):
 		self.initial_map=map_name
 	def stop(self):
 		self.running=False
+	def lock_camera_to_ent(self,entrectref,entrectref2):
+		self.entrectref=entrectref
+		self.entrectref2=entrectref2
+		self.locking=True
+		self.camera_pos=(entrectref()[0],entrectref()[1])
+		
+		
 		
 		
 		
