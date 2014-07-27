@@ -249,7 +249,7 @@ class cameraScroller(object):
 	def __init__(self):
 		reqs_update.append(self)
 		print(n+"cameraScroller initialized.")
-	def update(self,delta):
+	def update(self,delta,foo):
 		keys=pygame.key.get_pressed()
 		if keys[pygame.K_LEFT]:
 			camera_pos[0]+=10
@@ -468,7 +468,7 @@ while running:
 				daswesen.load_wesen("derp",(0,0),[layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 
 	for actor in reqs_update:
-		actor.update(delta)
+		actor.update(delta,None)
 	screen.fill((0,0,0))
 	oldrects={}
 	for r in list(layer1):
