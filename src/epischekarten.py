@@ -69,6 +69,12 @@ global current_layer
 current_layer=None
 global current_layer_str
 current_collision_layers=[]
+global enable_brushmode
+enable_brushmode=False
+global brushxtiles
+brushxtiles=0
+global brushytiles
+brushytiles=0
 print(n+"Defining layers.")
 layer1 = pygame.sprite.Group()
 layer2 = pygame.sprite.Group()
@@ -161,6 +167,7 @@ def change_tile(event):
 	global current_tile
 	current_tile=map_var.get_tile_template(current_tset,event.widget.meta_number)
 def add_tile():
+	global current_tile
 	mpos_l=[0,0]
 	mpos_l[0],mpos_l[1]=mse
 	mpos_l[0]-=camera_pos[0]
@@ -188,8 +195,24 @@ def add_tile():
 	if is_wesen_tset:
 		map_var.tiles.append(daswesen.load_wesen(map_var.tilesets[current_tset].name,(int(mpos_l[0]),int(mpos_l[1])),map_var.layers_l,map_var.collisions_l,map_var.reqs_update))
 		return
-	map_var.add_tile(current_tile,current_layer,int(current_layer_str.get()[5]),mpos_l,c_temp_layers)
-	print(n+"Tile of type "+str(current_tile)+" added at position "+str(mpos_l)+" on layer "+str(current_layer)+" on collision layers: "+str(current_collision_layers)+".")
+	if enable_brushmode==True:
+		global brushxtiles
+		global brushytiles
+		print(n+"Drawing brush of size "+str(brushxtiles)+" by "+str(brushytiles))
+		i=0
+		i2=0
+		while i<brushytiles:
+			i2=0
+			while i2<brushxtiles:
+				print(n+"In process of drawing brush of size "+str(brushxtiles)+" by "+str(brushytiles))
+				mpos_4=(mpos_l[0]+(i2*current_tile.image.get_rect()[2]),mpos_l[1]+(i*current_tile.image.get_rect()[3]))
+				map_var.add_tile(current_tile,current_layer,int(current_layer_str.get()[5]),mpos_4,c_temp_layers)
+				print(n+"Creating tile at coordinates "+str(mpos_4))
+				i2+=1
+			i+=1
+	if not enable_brushmode==True:
+		map_var.add_tile(current_tile,current_layer,int(current_layer_str.get()[5]),mpos_l,c_temp_layers)
+		print(n+"Tile of type "+str(current_tile)+" added at position "+str(mpos_l)+" on layer "+str(current_layer)+" on collision layers: "+str(current_collision_layers)+".")
 def update_layer():
 	global current_layer_str
 	global current_layer
@@ -239,6 +262,21 @@ def update_listbox_tilesets():
 def save_map():
 	f = open(os.path.join("..","media","maps_xml",map_name_svar.get()+".xml"), 'wb')
 	f.write(map_var.make_xml())
+def update_brush():
+	global brushxtiles
+	global brushytiles
+	if not brushyvar.get()=='' and not brushyvar.get()=='':
+		brushytiles=int(brushyvar.get())
+		brushxtiles=int(brushxvar.get())
+		print(n+"Brush width set to "+str(brushxtiles)+" by "+str(brushytiles))
+def enable_disable_brushmode():
+	global enable_brushmode
+	if enable_brushmode==True:
+		enable_brushmode=False
+		print(n+"Brush mode disabled")
+	elif enable_brushmode==False:
+		enable_brushmode=True
+		print(n+"Brush mode enabled.")
 try:
 	screen_width = int(640)
 	screen_height = int(480)
@@ -311,6 +349,9 @@ root.wm_title("Epische Karten Map Editor")
 map_name_svar=StringVar()
 current_layer=layer1
 current_layer_str=StringVar()
+brushyvar=StringVar()
+brushxvar=StringVar()
+isinbrushmode=StringVar()
 current_layer_str.set("layer1")
 embed = Frame(root, width=screen_width, height=screen_height)
 embed.grid(row=0,column=2)
@@ -318,6 +359,8 @@ text = ttk.Button(root, text='Load Tileset', command=load_tileset)
 text.grid(row=2,column=2)
 text2 = ttk.Button(root, text='Load Entity Definition', command=load_wesen_def)
 text2.grid(row=5,column=2)
+text3 = ttk.Button(root, text='Update Brush', command=update_brush)
+text3.grid(row=6,column=2)
 delete_tileset = ttk.Button(root, text='Unload Tileset (this will delete all tile instances from selected tileset)', command=remove_tileset_in_editor)
 delete_tileset.grid(row=3,column=2)
 is_adding_tiles_v=StringVar()
@@ -334,8 +377,17 @@ save_map_field=ttk.Entry(root,textvariable=map_name_svar)
 save_map_field.grid(row=5,column=1)
 Label(text="Map name:").grid(row=5,column=0)
 list_tsets_box=Listbox(root)
+brushxfield=ttk.Entry(root,textvariable=brushxvar)
+brushxfield.grid(row=6,column=1)
+Label(text="Brush width in tiles:").grid(row=6,column=0)
+brushyfield=ttk.Entry(root,textvariable=brushyvar)
+brushyfield.grid(row=7,column=1)
+Label(text="Brush height in tiles:").grid(row=7,column=0)
+list_tsets_box=Listbox(root)
 list_tsets_box.grid(row=1,column=0)
 list_tsets_box.bind("<<ListboxSelect>>", change_tset)
+b = ttk.Checkbutton(root, text='Enable Brush Mode',variable=isinbrushmode,command=enable_disable_brushmode)
+b.grid(row=4,column=2)
 tsets_scrollbar = ttk.Scrollbar(root, orient=VERTICAL)
 tsets_scrollbar.config(command=list_tsets_box.yview)
 tsets_scrollbar.grid(row=1,column=1,sticky='ns')
@@ -437,8 +489,13 @@ while running:
 			mpos_l[0]-=camera_pos[0]
 			mpos_l[1]-=camera_pos[1]
 			mpos2=(mpos_l[0],mpos_l[1])
-			if recty.collidepoint(mpos2):
-				selected_tiles.append(tiley)
+			if not enable_brushmode:
+				if recty.collidepoint(mpos2):
+					selected_tiles.append(tiley)
+			if enable_brushmode==True:
+				if tiley.rect.colliderect((mpos2[0],mpos2[1],brushxtiles*current_tile.image.get_rect()[2],brushytiles*current_tile.image.get_rect()[3])):
+					selected_tiles.append(tiley)
+				
 	if snap_to_grid_v.get()==1 and adding_tiles==1:
 		mpos_l=[0,0]
 		mpos_l[0],mpos_l[1]=mse
@@ -454,18 +511,25 @@ while running:
 			else:
 				messagebox.showerror("Epische Karten","Please load a tileset before adding tiles.")
 		if adding_tiles!=1 and event.type == pygame.MOUSEBUTTONDOWN:
-			if selected_tiles!=[]:
+			if selected_tiles!=[] and not enable_brushmode:
 				if selected_tiles[0] in nontemp_selected_tiles:
 					nontemp_selected_tiles.remove(selected_tiles[0])
 				else:
 					nontemp_selected_tiles.append(selected_tiles[0])
+			if selected_tiles!=[] and enable_brushmode:
+				if selected_tiles[0] in nontemp_selected_tiles:
+					for tile in selected_tiles:
+						try:
+							nontemp_selected_tiles.remove(tile)
+						except: pass
+				else:
+					for tile in selected_tiles:
+						nontemp_selected_tiles.append(tile)
 		if event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_DELETE:
 				for ntemptile in nontemp_selected_tiles:
 					map_var.kill_tile(ntemptile)
 				nontemp_selected_tiles=[]
-			if event.key==pygame.K_SPACE:
-				daswesen.load_wesen("derp",(0,0),[layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 
 	for actor in reqs_update:
 		actor.update(delta,None)
@@ -529,6 +593,10 @@ while running:
 				screen.blit(map_var.tilesets[current_tset].thumb,ctile_rect)
 				
 		except AttributeError: pass
+	try:
+		if enable_brushmode==True:
+			pygame.draw.rect(screen,(255,0,0,30),(mse[0],mse[1],ctile_rect.w*brushxtiles,ctile_rect.h*brushytiles),2)
+	except: pass
 	pygame.display.flip()
 	try:
 		root.update()

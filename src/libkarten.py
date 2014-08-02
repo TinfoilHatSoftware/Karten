@@ -112,7 +112,7 @@ class Karte(object):
 			for col_layer in tiles.get("collision_layers").split():
 				c_layers_temp.append(self.collisions_l[int(col_layer)-1])
 			c_indexes_temp=tiles.get("collision_layers")
-			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer"))-1,(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
+			self.tiles.append(Tile(self.tilesets[tiles.get("tileset")].tiles[int(tiles.get("index"))],layer_temp,int(tiles.get("layer")),(int(tiles.get("pos").split()[0]),int(tiles.get("pos").split()[1])),c_indexes_temp,c_layers_temp))
 		entstag=root.findall("ents")[0]
 		for ent in entstag.findall("ent"):
 			self.tiles.append(daswesen.load_wesen(ent.get("entfile"),(int(ent.get("pos").split()[0]),int(ent.get("pos").split()[1])),self.layers_l,self.collisions_l,self.reqs_update))
