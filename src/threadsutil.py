@@ -19,7 +19,8 @@ class Daemon(object):
 					self.args=[]
 		self.thread=threading.Thread(target=_thread,args=[])
 		self.thread.daemon=True
-	def start(self):
+	def start(self,callback):
+		self.args=[callback]
 		self.running=True
 		self.thread.start()
 	def stop(self):
@@ -28,15 +29,15 @@ class ThreadedReactor(object):
 	def __init__(self):
 		self.daemon=Daemon(self._runreactor,[])
 		self.stopped=False
-	def _runreactor(self):
+	def _runreactor(self,callback):
 		while self.stopped==False:
 			reactor.run(installSignalHandlers=0)
 	def listenTCP(self,port,factory):
 		reactor.listenTCP(port,factory)
 	def connectTCP(self,host,port,factory):
 		reactor.connectTCP(host,port,factory)
-	def run(self):
-		self.daemon.start()
+	def run(self,callback):
+		self.daemon.start(callback)
 	def stop(self):
 		reactor.callFromThread(reactor.stop)
 		self.stopped=True

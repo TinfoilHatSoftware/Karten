@@ -17,6 +17,9 @@
 #END DIRECTIVES
 import daswesen
 import pygame
+import animations
+import projectiles
+from os.path import join as join
 class WesenEnt(daswesen.GrafikWesenBase):
 	def __init__(self,animation,position,layer,collision_layers):
 		self.layer=layer[1]
@@ -30,33 +33,57 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.moving=False
 		self.is_wesen=True
 		self.firsttime=True
+		explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
+		blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
+		self.sounds=(explode_sound,blast_sound)
+		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
+		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
 		if self.going==True:
 			if self.firsttime==True:
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
 				self.firsttime==False
+				sender.charcont=self
 			self.counter+=delta
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					return
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_SPACE:
+						if self.state=='left':
+							y=0
+							x=-1
+						if self.state=='right':
+							y=0
+							x=1
+						if self.state=='up':
+							y=-1
+							x=0
+						if self.state=='down':
+							y=1
+							x=0
+						projectiles.PlasmaExplosive(self.rect.center,(x,y),self.layer,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds)
 			keys=pygame.key.get_pressed()
-			if keys[pygame.K_LEFT]:
+			if keys[pygame.K_a]:
 				self.rect.x-=delta/4
 				self.xvel=-1
 				self.yvel=0
 				self.state='left'
 				self.moving=True
-			elif keys[pygame.K_UP]:
+			elif keys[pygame.K_w]:
 				self.rect.y-=delta/4
 				self.yvel=-1
 				self.xvel=0
 				self.state='up'
 				self.moving=True
-			elif keys[pygame.K_DOWN]:
+			elif keys[pygame.K_s]:
 				self.rect.y+=delta/4
 				self.yvel=1
 				self.xvel=0
 				self.state='down'
 				self.moving=True
-			elif keys[pygame.K_RIGHT]:
+			elif keys[pygame.K_d]:
 				self.rect.x+=delta/4
 				self.xvel=1
 				self.yvel=0

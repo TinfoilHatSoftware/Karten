@@ -9,3 +9,4 @@ import game
 tehgame=game.Game()
 tehgame.load()
 tehgame.run()
+

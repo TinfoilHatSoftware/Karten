@@ -30,6 +30,8 @@ class Game(object):
 		self.layer5_c = []
 		self.locking=False
 		self.reqs_update=[]
+		pygame.mixer.pre_init(44100, 16, 6, 4096)
+		pygame.init()
 	def load(self):
 		self.fp.seek(0)
 		self.clock=pygame.time.Clock()
@@ -71,7 +73,7 @@ class Game(object):
 		while self.running:
 			delta=self.clock.tick(60)
 			self.screen.fill((0,0,0))
-			for e in pygame.event.get():
+			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
 					self.running = False
 			self.game_code.update(delta,self.c_map,self)

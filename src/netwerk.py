@@ -11,14 +11,16 @@ from twisted.internet import reactor
 from os.path import join as pathjoin
 import os.path
 import time
+import imp
 from twisted.internet.protocol import Protocol, ClientFactory
 n='[netwerks]'
 def makebytes(string_var):
 	return string_var.encode('utf8')
 class GameClientProtocol(LineReceiver):
-	def __init__(self):
+	def __init__(self,callback):
 		self.state='SETNAME'
 		self.mapname=''
+		self.callback=callback
 		self.username=''
 		self.maptext=''
 	def connectionMade(self):
@@ -47,17 +49,17 @@ class GameClientProtocol(LineReceiver):
 			self.sendLine(b'GOT_MAPS')
 			self.state='RUNNING'
 			self.sendLine(b'RUNNING')
-			return
-		self.sendLine(makebytes(self.mapname))
-		self.state='RECV_MAP'
+		else:
+			self.sendLine(makebytes(self.mapname))
+			self.state='RECV_MAP'
 	def handle_RECV_MAP(self, line):
 		fp=open(pathjoin("..","media","maps_xml",self.mapname+".xml"),'w')
 		fp.write(line)
 		self.mappath=pathjoin("..","media","maps_xml",self.mapname+".xml")
 		self.state='RUNNING'
 	def handle_RUNNING(self, line):
+		self.sync_send=self.callback(line,self)
 		self.sendLine(self.sync_send)
-		self.sync_recv=line
 	def	lineReceived(self, line):
 		print('[netwerks(debugger)]Recv\'d line:'+line.decode('utf8'))
 		print('[netwerks(debugger)]Current state is '+str(self.state))
@@ -74,13 +76,17 @@ class GameClientProtocol(LineReceiver):
 			self.handle_RUNNING(line)
 		elif self.state=='GET_MAP':
 			self.handle_GET_MAP(line)
+		else:
+			self.handle_RUNNING(line)
 class GameClientFactory(ClientFactory):
+    def __init__(self,callback):
+        self.callback=callback
     def startedConnecting(self, connector):
         print (n+'Connecting...')
 
     def buildProtocol(self, addr):
         print (n+'Connected.')
-        return GameClientProtocol()
+        return GameClientProtocol(self.callback)
 
     def clientConnectionLost(self, connector, reason):
         print (n+'Lost connection.  Reason:', reason)
@@ -89,10 +95,11 @@ class GameClientFactory(ClientFactory):
         print (n+'Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
 
-	def __init__(self, users, addr,mapname):
+	def __init__(self, users, addr,mapname,callback):
 		self.addr=addr
 		self.users = users
 		self.username = None
+		self.callback=callback
 		self.mapname=mapname
 		self.state = "LOGIN"
 
@@ -116,19 +123,21 @@ class GameServerProtocol(LineReceiver):
 		if line.decode('utf8')=="GOT_MAPS":
 			self.state="RUNNING"
 			print(n+"Connection with name "+str(self.username)+ " finished getting maps and is now in state RUNNING")
-			return
-		try:
-			self.sendLine(makebytes(str(open(pathjoin("..","media","maps_xml",line.decode('utf8')+'.xml')).read())))
-			print(n+"Connection with name "+str(self.username)+ " requested and recieved valid mapfile named "+str(line.decode('utf8')))
-		except IOError:
-			self.sendLine(makebytes('BAD_MAPNAME'))
-			print(n+"Connection with name "+str(self.username)+ " requested invalid map "+str(line.decode('utf8')))
-			time.sleep(5)
+		else:
+			try:
+				self.sendLine(makebytes(str(open(pathjoin("..","media","maps_xml",line.decode('utf8')+'.xml')).read())))
+				print(n+"Connection with name "+str(self.username)+ " requested and recieved valid mapfile named "+str(line.decode('utf8')))
+			except IOError:
+				self.sendLine(makebytes('BAD_MAPNAME'))
+				print(n+"Connection with name "+str(self.username)+ " requested invalid map "+str(line.decode('utf8')))
+				time.sleep(5)
 	def handle_RUNNING(self,line):
+		self.sync_send=self.callback(line,self)
 		for name, protocol in self.users.items():
 			if protocol != self:
-				protocol.sendLine(makebytes(self.username+" ")+line)
+				protocol.sendLine(self.sync_send)
 	def handle_GET_MAP_NAME(self,line):
+		self.sendLine(makebytes(self.mapname))
 		self.sendLine(makebytes(self.mapname))
 		self.state="GET_MAP"
 	def lineReceived(self, line):
@@ -144,11 +153,12 @@ class GameServerProtocol(LineReceiver):
 
 class GameServerFactory(Factory):
 
-	def __init__(self,mapname):
+	def __init__(self,mapname,callback):
 		self.users={}
 		self.mapname=mapname
+		self.callback=callback
 
 	def buildProtocol(self, addr):
-		return GameServerProtocol(self.users,addr,self.mapname)
+		return GameServerProtocol(self.users,addr,self.mapname,self.callback)
 
 

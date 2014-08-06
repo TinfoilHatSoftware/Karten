@@ -32,6 +32,10 @@ class XMLAnimation:
 		print("[animations.py]Read state:framelist combos:"+str(self.states)+".")
 		self.xml_tree=None
 		self.xml_tree_root=None
+		keys=list(self.states.keys())
+		for key in keys:
+			for frame in self.states[key]:
+				frame=frame.convert()
 	def get_frame(self,state_name,frame_num):
 		return self.states[state_name][frame_num]
 class XMLTileAnimation:
