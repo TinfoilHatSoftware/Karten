@@ -4,7 +4,7 @@ Vagrant.configure("2") do |config|
 	v.gui = true
   end
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, '--audio', 'directsound', '--audiocontroller', 'hda'] # choices: hda sb16 ac97
+    vb.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'ac97'] # choices: hda sb16 ac97
   end
   config.vm.provision "shell", path: "vagrantbootstrap.sh"
 end
