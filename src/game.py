@@ -76,7 +76,6 @@ class Game(object):
 			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
 					self.running = False
-			self.game_code.update(delta,self.c_map,self)
 			for ent in self.reqs_update:
 				ent.update(delta,self)
 			oldrects={}
@@ -117,6 +116,7 @@ class Game(object):
 				r.rect.x,r.rect.y=oldrects[r]
 			for r in list(self.layer5):
 				r.rect.x,r.rect.y=oldrects[r]
+			self.game_code.update(delta,self.c_map,self)
 			pygame.display.flip()
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):

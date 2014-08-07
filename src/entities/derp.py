@@ -33,6 +33,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.moving=False
 		self.is_wesen=True
 		self.firsttime=True
+		self.framecounter=0
+		self.energy=200
 		explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
 		blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
 		self.sounds=(explode_sound,blast_sound)
@@ -41,6 +43,12 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
 		if self.going==True:
+			if self.framecounter==50:
+				self.framecounter=0
+				if self.energy<200:
+					self.energy+=10
+			else:
+				self.framecounter+=1
 			if self.firsttime==True:
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
 				self.firsttime==False
@@ -50,7 +58,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				if event.type == pygame.QUIT:
 					return
 				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_SPACE:
+					if event.key == pygame.K_SPACE and self.energy>=50:
 						if self.state=='left':
 							y=0
 							x=-1
@@ -63,7 +71,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						if self.state=='down':
 							y=1
 							x=0
-						projectiles.PlasmaExplosive(self.rect.center,(x,y),self.layer,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds)
+						self.energy-=50
+						projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds)
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_a]:
 				self.rect.x-=delta/4
