@@ -25,4 +25,23 @@ python3 setup.py install
 cd ..
 rm -rf pygame
 apt-get -y install xinit lxde
+export DEBIAN_FRONTEND=noninteractive
+
+sudo apt-get update
+
+# ---- OSS AUDIO
+sudo usermod -a -G audio vagrant
+sudo apt-get install -y oss4-base oss4-dkms oss4-source oss4-gtk linux-headers-3.2.0-23 debconf-utils
+sudo ln -s /usr/src/linux-headers-$(uname -r)/ /lib/modules/$(uname -r)/source || echo ALREADY SYMLINKED
+sudo module-assistant prepare
+sudo module-assistant auto-install -i oss4 # this can take 2 minutes
+sudo debconf-set-selections <<< "linux-sound-base linux-sound-base/sound_system select  OSS"
+echo READY.
+
+# have to reboot for drivers to kick in, but only the first time of course
+if [ ! -f ~/runonce ]
+then
+  sudo reboot
+  touch ~/runonce
+fi
 startx
