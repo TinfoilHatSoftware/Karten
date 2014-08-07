@@ -31,7 +31,7 @@ class Game(object):
 		self.locking=False
 		self.reqs_update=[]
 		pygame.mixer.pre_init(44100, 16, 6, 4096)
-		pygame.mixer.init():
+		pygame.mixer.init()
 		print('[launcher]Mixer initialized.')
 		pygame.init()
 	def load(self):
