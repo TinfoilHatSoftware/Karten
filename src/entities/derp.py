@@ -9,7 +9,7 @@
 #
 #DO NOT UNCOMMENT THE FOLLOWING LINES. They are directives to the entity loader and must remain commented to be effective.
 #BEGIN DIRECTIVES
-#DIRECTIVE ANIMATION mech_tan_resized
+#DIRECTIVE ANIMATION evil_robot_blue
 #DIRECTIVE POSITION ;
 #DIRECTIVE LAYER 3
 #DIRECTIVE COLLISION_LAYERS 3
@@ -35,9 +35,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.firsttime=True
 		self.framecounter=0
 		self.energy=200
-		explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
-		blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
-		self.sounds=(explode_sound,blast_sound)
+		self.health=200
 		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
@@ -53,6 +51,9 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
 				self.firsttime==False
 				sender.charcont=self
+				explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
+				blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
+				self.sounds=(explode_sound,blast_sound)
 			self.counter+=delta
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:

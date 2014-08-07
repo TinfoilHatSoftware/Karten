@@ -53,7 +53,6 @@ class Tile(pygame.sprite.Sprite):
 		self.c_layers=collision_layers
 		self.animation=tiletemplate.animation
 		self.image=tiletemplate.image
-		self.image=self.image.convert()
 		self.rect=self.image.get_rect()
 		self.frame=0
 		for c_layer in self.c_layers:
