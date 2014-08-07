@@ -27,4 +27,8 @@ def update(delta,c_map,sender):
 	sender.screen.blit(health_label,(int(sender.xres)-140,30))
 	pygame.draw.rect(sender.screen,(0,255,0),(int(sender.xres)-211,11,sender.charcont.health,13))
 	pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)
+	if sender.charcont.health<=0:
+		sender.stop()
+		sender.change_map('test_map')
+		sender.run()
 	

@@ -11,7 +11,7 @@ import animations
 import libkarten
 import os
 class PlasmaExplosive(pygame.sprite.Sprite):
-	def __init__(self,pos,vel,layer,col_layer,req_update_list,anims,sounds):
+	def __init__(self,pos,vel,layer,col_layer,req_update_list,anims,sounds,sender):
 		super(PlasmaExplosive,self).__init__()
 		self.animation=anims[1]
 		if vel[0]>0:
@@ -24,6 +24,7 @@ class PlasmaExplosive(pygame.sprite.Sprite):
 			self.direction='up'
 		self.vel=vel
 		self.frame=0
+		self.sender=sender
 		self.explosion_sound,self.blast_sound=sounds
 		self.image=self.animation.get_frame(self.direction,self.frame)
 		self.rect=self.image.get_rect()
@@ -56,12 +57,22 @@ class PlasmaExplosive(pygame.sprite.Sprite):
 			self.frame=0
 		self.image=self.animation.get_frame(self.direction,self.frame)
 		for wall in sender.c_map.tiles:	
-			if self.rect.colliderect(wall.rect) and  self.c_layer in wall.c_layers and wall!=self and wall !=sender.charcont and not self.exploded:
+			if self.rect.colliderect(wall.rect) and  self.c_layer in wall.c_layers and wall!=self and wall !=self.sender and not self.exploded:
 				self.moving=False
 				self.kill()
 				self.tile_kill()
 				Explosion(self.rect.center,self.layer,self.reqlayer,self.explode_animation,self,self.explosion_sound)
 				self.exploded=True
+				hashealth=True
+				try:
+					wall.health
+				except:
+					hashealth=False
+				if hashealth:
+					if wall.health>=50:
+						wall.health-=50
+					else:
+						wall.health=0
 		if self.exploded:
 			self.kill()
 			self.tile_kill()
