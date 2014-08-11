@@ -1,4 +1,4 @@
-python "epischekarten.py"
+python "launcher.py"
 
 pause
 del "%0"

@@ -106,7 +106,7 @@ def load_tileset():
 	try:
 		map_var.load_tileset(tset)
 	except IOError as e:
-		print(n+"Invalid tileset directory!")
+		print(n+"Invalid tileset directory! Error text is as follows:",e)
 		return
 	list_tsets_box.insert(END,os.path.basename(folderpath))
 	current_tset=tset
