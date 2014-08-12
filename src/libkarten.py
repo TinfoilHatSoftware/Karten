@@ -149,7 +149,7 @@ class Karte(object):
 		self.tilesets[tset_name]=XMLTileSet(tset_name)
 	def remove_tileset(self,tset_name):
 		#this will not delete current tiles from that tileset
-		self.tilesets[tset_name]=None
+		del self.tilesets[tset_name]
 	def get_tiles_from_tileset(self,tset_name):
 		return self.tilesets[tset_name].tiles
 	def get_all_tiles(self):

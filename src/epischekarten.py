@@ -250,8 +250,10 @@ def remove_tileset_in_editor():
 	selection = list_tsets_box.curselection()[0]
 	selection=list_tsets_box.get(selection)
 	for tile_temp in map_var.get_all_tiles():
-		if tile_temp.tileset_name==selection:
-			map_var.kill_tile(tile_temp)
+		try:
+			if tile_temp.tileset_name==selection:
+				map_var.kill_tile(tile_temp)
+		except AttributeError: pass
 	map_var.remove_tileset(selection)
 	nontemp_selected_tiles=[]
 	update_listbox_tilesets()

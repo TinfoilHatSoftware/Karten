@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xmlanimation fileext = ".png">
+<state name ="right">
+<frames num_frames="4" frame_prefix="" frame_start_num="1" >
+</frames>
+</state>
+<state name ="up">
+<frames num_frames="4" frame_prefix="" frame_start_num="5" >
+</frames>
+</state>
+<state name ="left">
+<frames num_frames="4" frame_prefix="" frame_start_num="9" >
+</frames>
+</state>
+<state name ="down">
+<frames num_frames="4" frame_prefix="" frame_start_num="13" >
+</frames>
+</state>
+</xmlanimation>
