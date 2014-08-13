@@ -34,7 +34,7 @@ class XMLAnimation:
 		keys=list(self.states.keys())
 		for key in keys:
 			for frame in self.states[key]:
-				frame=frame.convert()
+				frame=frame.convert_alpha()
 	def get_frame(self,state_name,frame_num):
 		return self.states[state_name][frame_num]
 class XMLTileAnimation:
@@ -64,6 +64,6 @@ class XMLTileAnimation:
 		keys=list(self.states.keys())
 		for key in keys:
 			for frame in self.states[key]:
-				frame=frame.convert()
+				frame=frame.convert_alpha()
 	def get_frame(self,state_name,frame_num):
 		return self.states[state_name][frame_num]

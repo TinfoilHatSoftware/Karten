@@ -74,6 +74,9 @@ class WesenEnt(daswesen.GrafikWesenBase):
 							x=0
 						self.energy-=50
 						projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self)
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_q:
+						self.health=0
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_a]:
 				self.rect.x-=delta/4
@@ -114,7 +117,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
 			for wall in sender.c_map.tiles:	
-				if self.rect.colliderect(wall.rect) and  self.c_layers[0] in wall.c_layers and wall!=self:
+				if self.rect.colliderect(wall.rect) and self.c_layers[0] in wall.c_layers and wall!=self:
 					if self.xvel > 0: # Moving right; Hit the left side of the wall
 						self.rect.right = wall.rect.left
 						print(self.rect.right,self.rect.left)

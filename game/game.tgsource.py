@@ -7,6 +7,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 import pygame
+import os
 mono_font = pygame.font.SysFont("Copperplate Sans", 20)
 global energy_label
 energy_label=mono_font.render("Energy",False,(128,128,128))
@@ -15,11 +16,22 @@ global health_label
 mono_font2 = pygame.font.SysFont("Copperplate Sans", 20)
 health_label=mono_font2.render("Health",False,(128,128,128))
 health_label=health_label.convert()
+teleport_sound2=pygame.mixer.Sound(os.path.join('..','media','sound','teleport_finish.wav'))
+global framecount
+framecount=0
+global timecount
+timecount=0
 
 def update(delta,c_map,sender):
 	global mono_font
 	global energy_label
 	global health_label
+	global framecount
+	global timecount
+	global firsttime
+	framecount+=1
+	timecount+=delta/1000
+	print('fps:'+str(framecount/timecount))
 	sender.screen.blit(energy_label,(80,30))
 	pygame.draw.rect(sender.screen,(0,255,0),(11,11,sender.charcont.energy,13))
 	pygame.draw.rect(sender.screen,(128,128,128),(10,10,201,15),2)
@@ -28,7 +40,10 @@ def update(delta,c_map,sender):
 	pygame.draw.rect(sender.screen,(0,255,0),(int(sender.xres)-211,11,sender.charcont.health,13))
 	pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)
 	if sender.charcont.health<=0:
+		teleport_sound2.play()
 		sender.stop()
-		sender.change_map('test_map')
+		sender.change_map('test2')
 		sender.run()
+		framecount=0
+		timecount=0
 	

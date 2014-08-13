@@ -11,13 +11,14 @@ import libkarten
 import imp
 class Game(object):
 	def __init__(self):
+		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
 		self.fp.seek(0)
 		for line in self.fp.readlines():
 			if line.split()[0]=='resolution':
 				self.xres,self.yres=line.split('resolution', 1)[1].strip('\n').split()
 		self.fp.seek(0)
-		self.screen=pygame.display.set_mode((int(self.xres),int(self.yres)))
+		self.screen=pygame.display.set_mode((int(self.xres),int(self.yres)),self.flags)
 		self.layer1 = pygame.sprite.Group()
 		self.layer2 = pygame.sprite.Group()
 		self.layer3 = pygame.sprite.Group()
@@ -34,6 +35,8 @@ class Game(object):
 		pygame.mixer.init()
 		print('[launcher]Mixer initialized.')
 		pygame.init()
+		self.xres=int(self.xres)
+		self.yres=int(self.yres)
 	def load(self):
 		self.fp.seek(0)
 		self.clock=pygame.time.Clock()
@@ -119,7 +122,7 @@ class Game(object):
 			for r in list(self.layer5):
 				r.rect.x,r.rect.y=oldrects[r]
 			self.game_code.update(delta,self.c_map,self)
-			pygame.display.flip()
+			pygame.display.update((0,0,self.xres,self.yres))
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
 		print(self.n+"Changing map to "+map_name+".")
