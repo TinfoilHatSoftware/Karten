@@ -74,9 +74,6 @@ class WesenEnt(daswesen.GrafikWesenBase):
 							x=0
 						self.energy-=50
 						projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self)
-				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_q:
-						self.health=0
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_a]:
 				self.rect.x-=delta/4
