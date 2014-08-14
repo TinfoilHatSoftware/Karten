@@ -12,6 +12,7 @@ from os.path import join as pathjoin
 import os.path
 import time
 import imp
+import threadsutil
 from twisted.internet.protocol import Protocol, ClientFactory
 n='[netwerks]'
 def makebytes(string_var):
@@ -49,6 +50,7 @@ class GameClientProtocol(LineReceiver):
 			self.sendLine(b'GOT_MAPS')
 			self.state='RUNNING'
 			self.sendLine(b'RUNNING')
+			return
 		else:
 			self.sendLine(makebytes(self.mapname))
 			self.state='RECV_MAP'
@@ -59,7 +61,9 @@ class GameClientProtocol(LineReceiver):
 		self.state='RUNNING'
 	def handle_RUNNING(self, line):
 		self.sync_send=self.callback(line,self)
-		self.sendLine(self.sync_send)
+		print(n+'Got following from callback:'+str(self.sync_send))
+		print(n+'Sending:'+str(self.sync_send.encode('utf8')))
+		self.sendLine(self.sync_send.encode('utf8'))
 	def	lineReceived(self, line):
 		print('[netwerks(debugger)]Recv\'d line:'+line.decode('utf8'))
 		print('[netwerks(debugger)]Current state is '+str(self.state))
@@ -94,7 +98,6 @@ class GameClientFactory(ClientFactory):
     def clientConnectionFailed(self, connector, reason):
         print (n+'Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
-
 	def __init__(self, users, addr,mapname,callback):
 		self.addr=addr
 		self.users = users
@@ -102,6 +105,7 @@ class GameServerProtocol(LineReceiver):
 		self.callback=callback
 		self.mapname=mapname
 		self.state = "LOGIN"
+		n='[netwerks server]'
 
 	def connectionMade(self):
 		print(n+"Connection made from client at "+str(self.addr))
@@ -119,6 +123,7 @@ class GameServerProtocol(LineReceiver):
 		self.users[name] = self
 		self.state = "GET_MAP_NAME"
 		print(n+"Connection at address "+str(self.addr)+" set username to "+"'"+str(self.username)+"'")
+		print(n+"User list is now:"+str(self.users))
 	def handle_GET_MAP(self,line):
 		if line.decode('utf8')=="GOT_MAPS":
 			self.state="RUNNING"
@@ -133,9 +138,9 @@ class GameServerProtocol(LineReceiver):
 				time.sleep(5)
 	def handle_RUNNING(self,line):
 		self.sync_send=self.callback(line,self)
-		for name, protocol in self.users.items():
+		for name, protocol in list(self.users.items()):
 			if protocol != self:
-				protocol.sendLine(self.sync_send)
+				protocol.sendLine(self.sync_send.encode('utf8'))
 	def handle_GET_MAP_NAME(self,line):
 		self.sendLine(makebytes(self.mapname))
 		self.sendLine(makebytes(self.mapname))
@@ -160,5 +165,34 @@ class GameServerFactory(Factory):
 
 	def buildProtocol(self, addr):
 		return GameServerProtocol(self.users,addr,self.mapname,self.callback)
+class ThreadedSyncManagerWithMapDownloaderClientSide(object):
+	def __init__(self,port,addr,callback):
+		self.reactor=threadsutil.ThreadedReactor()
+		self.PORT=int(port)
+		self.callback=callback
+		self.HOST=addr
+	def connect(self):
+		self.reactor.connectTCP(self.HOST,self.PORT,GameClientFactory(self.callback))
+	def run(self):
+		self.reactor.run(self.callback)
+	def stop(self):
+		#Destroy this class instance after this, not safe to call run() to restart
+		self.reactor.stop()
+		
+class ThreadedSyncManagerWithMapDownloaderServerSide(object):
+	def __init__(self,port,map_to_provide):
+		self.reactor=threadsutil.ThreadedReactor()
+		self.PORT=int(port)
+		self.map_to_provide=map_to_provide
+	def listen(self):
+		self.reactor.listenTCP(self.PORT, GameServerFactory(self.map_to_provide,self._callback))
+	def run(self):
+		self.reactor.run(self._callback)
+	def stop(self):
+		#Destroy this class instance after this, not safe to call run() to restart
+		self.reactor.stop()
+	def _callback(self,syncrecv,network):
+		return syncrecv.decode('utf8')
+		
 
 

@@ -2,15 +2,8 @@
 import netwerk
 import threadsutil
 def callback(syncrecv,network):
-	print(n+"In callback.")
-	print(syncrecv)
-	return sync_send
-n='[nettest]'
-sync_send=b'gubby'
-sync_recv=''
-myreactor=threadsutil.ThreadedReactor()
-PORT=int(input(n+"Port?>>>"))
-mode=input(n+"Mode? S=server, C=client>>>")
+	return syncrecv.decode('utf8')
+mode=input("Mode? S=server, C=client>>>")
 if mode.lower()=="s":
 	mode='server'
 elif mode.lower()=="c":
@@ -18,16 +11,13 @@ elif mode.lower()=="c":
 else:
 	print(n+"Invalid response. Quitting.")
 	quit()
-if mode=='client':
-	HOST=input(n+"Host IP?>>>")
 if mode=='server':
-	myreactor.listenTCP(PORT, netwerk.GameServerFactory('test_map',callback))
+	manager=netwerk.ThreadedSyncManagerWithMapDownloaderServerSide('25565','test_map')
+	manager.listen()
 if mode=='client':
-	myreactor.connectTCP(HOST,PORT,netwerk.GameClientFactory(callback))
-
-myreactor.run(callback)
+	manager=netwerk.ThreadedSyncManagerWithMapDownloaderClientSide('25565','127.0.0.1',callback)
+	manager.connect()
+manager.run()
 while True:
-	sync_send=input('Hullo>')
-	if sync_send=='exitreactor':
-		myreactor.stop()
-	print(sync_recv)
+	pass
+

@@ -42,7 +42,7 @@ def update(delta,c_map,sender):
 	if sender.charcont.health<=0:
 		teleport_sound2.play()
 		sender.stop()
-		sender.change_map('test2')
+		sender.change_map('test_map')
 		sender.run()
 		framecount=0
 		timecount=0
