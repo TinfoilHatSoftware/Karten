@@ -12,7 +12,9 @@ from os.path import join as pathjoin
 import os.path
 import time
 import imp
+import traceback
 import threadsutil
+import pygame
 from twisted.internet.protocol import Protocol, ClientFactory
 n='[netwerks]'
 def makebytes(string_var):
@@ -61,12 +63,8 @@ class GameClientProtocol(LineReceiver):
 		self.state='RUNNING'
 	def handle_RUNNING(self, line):
 		self.sync_send=self.callback(line,self)
-		print(n+'Got following from callback:'+str(self.sync_send))
-		print(n+'Sending:'+str(self.sync_send.encode('utf8')))
 		self.sendLine(self.sync_send.encode('utf8'))
 	def	lineReceived(self, line):
-		print('[netwerks(debugger)]Recv\'d line:'+line.decode('utf8'))
-		print('[netwerks(debugger)]Current state is '+str(self.state))
 		if line.decode('utf8')=='MORE_MAPS':
 			self.state=='GET_MAP_NAME'
 			return
@@ -165,7 +163,7 @@ class GameServerFactory(Factory):
 
 	def buildProtocol(self, addr):
 		return GameServerProtocol(self.users,addr,self.mapname,self.callback)
-class ThreadedSyncManagerWithMapDownloaderClientSide(object):
+class ThreadedSyncManagerClient(object):
 	def __init__(self,port,addr,callback):
 		self.reactor=threadsutil.ThreadedReactor()
 		self.PORT=int(port)
@@ -179,7 +177,7 @@ class ThreadedSyncManagerWithMapDownloaderClientSide(object):
 		#Destroy this class instance after this, not safe to call run() to restart
 		self.reactor.stop()
 		
-class ThreadedSyncManagerWithMapDownloaderServerSide(object):
+class ThreadedSyncManagerServer(object):
 	def __init__(self,port,map_to_provide):
 		self.reactor=threadsutil.ThreadedReactor()
 		self.PORT=int(port)
@@ -193,6 +191,27 @@ class ThreadedSyncManagerWithMapDownloaderServerSide(object):
 		self.reactor.stop()
 	def _callback(self,syncrecv,network):
 		return syncrecv.decode('utf8')
-		
+class NetworkCoordinator(object):
+	def __init__(self,port,host,owned):
+		manager=ThreadedSyncManagerClient(port,host,self._callback)
+		manager.connect()
+		manager.run()
+		self.own=owned
+		self.rects={}
+	def add_ent(self,ent):
+		self.rects[ent.ent_id]=(ent.set_rect,ent.get_rect)
+	def del_ent(self,ent):
+		del self.rects[ent.ent_id]
+	def _callback(self,line,protocool):
+		strline=line.decode()
+		try:
+			for k,v in eval(line.decode().replace('RUNNING','')).items():
+				if self.own:
+					self.rects[int(k)][0](pygame.rect.Rect(v))
+		except (SyntaxError) as e: print(str(traceback.print_exc()))
+		text={}
+		for ent_id,rect_methods in self.rects.items():
+			text[int(ent_id)]=(rect_methods[1]().x,rect_methods[1]().y,rect_methods[1]().w,rect_methods[1]().h)
+		return str(text)
 
 

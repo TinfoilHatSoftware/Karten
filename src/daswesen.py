@@ -34,6 +34,10 @@ class GrafikWesenBase(pygame.sprite.Sprite):
 		del self
 	def get_collide_layers(self):
 		return self.c_layers
+	def get_rect(self):
+		return self.rect
+	def set_rect(self,rect):
+		self.rect=rect
 
 def get_ent_directives(entname):
 	directive_start_line=-100
