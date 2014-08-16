@@ -24,6 +24,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 	def __init__(self,animation,position,layer,collision_layers):
 		self.layer=layer[1]
 		self.name="derp"
+		self.ent_id=0
 		self.localplayerchar=True
 		self.counter=0
 		self.xvel=0

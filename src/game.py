@@ -9,6 +9,7 @@ from os.path import join as jpath
 import pygame
 import libkarten
 import imp
+import netwerk
 class Game(object):
 	def __init__(self):
 		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
@@ -66,8 +67,22 @@ class Game(object):
 		print(self.n+'Running.')
 		self.yres=int(self.yres)
 		self.xres=int(self.xres)
+		owner=input('Owner_id>')
+		if owner.lower()=='this':
+			owned=True
+		if owner.lower()=='other':
+			owned=False
+		self.manager=netwerk.NetworkCoordinator('25565','127.0.0.1',owned)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
 		self.c_map.fromxml(self.initial_map)
+		for tile in self.c_map.tiles:
+			is_wesen=True
+			try:
+				tile.is_wesen
+			except AttributeError:
+				is_wesen=False
+			if is_wesen and tile.name=='derp':
+				self.manager.add_ent(tile)
 		for ent in self.reqs_update:
 			try:
 				ent.go()
@@ -83,6 +98,7 @@ class Game(object):
 					self.running = False
 			for ent in self.reqs_update:
 				ent.update(delta,self)
+			self.manager.update()
 			oldrects={}
 			if self.locking==True:
 				self.camera_pos=(-self.entrectref().center[0]+self.xres/2,-self.entrectref().center[1]+self.yres/2)

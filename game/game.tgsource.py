@@ -31,7 +31,6 @@ def update(delta,c_map,sender):
 	global firsttime
 	framecount+=1
 	timecount+=delta/1000
-	print('fps:'+str(framecount/timecount))
 	sender.screen.blit(energy_label,(80,30))
 	pygame.draw.rect(sender.screen,(0,255,0),(11,11,sender.charcont.energy,13))
 	pygame.draw.rect(sender.screen,(128,128,128),(10,10,201,15),2)

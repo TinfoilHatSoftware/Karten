@@ -8,7 +8,6 @@ class Gunk(object):
 		self.ent_id=0
 		self.rect=pygame.rect.Rect((50,60,10,10))
 	def set_rect(self,rect):
-		print('setting rect to ',rect)
 		self.rect=rect
 	def get_rect(self):
 		return self.rect
@@ -32,7 +31,7 @@ if mode=='server':
 	manager.listen()
 	manager.run()
 if mode=='client':
-	manager=netwerk.NetworkCoordinator('25565','127.0.0.1',owned)
+	manager=netwerk.NetworkCoordinator('25565','127.0.0.1')
 	gunky=Gunk()
 	manager.add_ent(gunky)
 	time.sleep(1)
