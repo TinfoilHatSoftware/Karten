@@ -68,10 +68,9 @@ class Game(object):
 		self.yres=int(self.yres)
 		self.xres=int(self.xres)
 		owner=input('Owner_id>')
-		owned=True
-		if owner.lower()=='this':
+		if owner=='this':
 			owned=True
-		elif owner.lower()=='other':
+		elif owner=='other':
 			owned=False
 		self.manager=netwerk.NetworkCoordinator('25565','127.0.0.1',owned)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)

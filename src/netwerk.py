@@ -198,28 +198,32 @@ class NetworkCoordinator(object):
 		self.manager.run()
 		self.id_num=0
 		self.own=owned
+		self.latest_data={}
 		self.rects={}
+		self.out_text={}
 	def add_ent(self,ent):
 		self.rects[ent.ent_id]=[ent.set_rect,list(ent.get_rect()),ent.get_rect]
 	def del_ent(self,ent):
 		del self.rects[ent.ent_id]
 	def _callback(self,line,protocool):
-		strline=line.decode()
 		try:
 			for k,v in eval(line.decode().replace('RUNNING','')).items():
-				if self.own:
-					self.rects[int(k)][0](pygame.rect.Rect(v))
+				self.latest_data[k]=v
 		except (SyntaxError) as e: print(str(traceback.print_exc()))
-		text={}
-		for ent_id,rect_methods in self.rects.items():
-			text[int(ent_id)]=(rect_methods[1][0],rect_methods[1][1],rect_methods[1][2],rect_methods[1][3])
-		return str(text)
+		return str(self.out_text)
 	def update(self):
+		print(self.latest_data,self.own)
+		for k,v in self.latest_data.items():
+			if self.own:
+				self.rects[k][0](pygame.rect.Rect(v))
 		for key,value in self.rects.items():
-			print(str(value))
-			self.rects[int(key)][1]=value[2]()
+			self.rects[key][1]=value[2]()
+		self.out_text={}
+		for ent_id,rect_methods in self.rects.items():
+			self.out_text[ent_id]=(rect_methods[1][0],rect_methods[1][1],rect_methods[1][2],rect_methods[1][3])
 	def stop(self):
 		self.manager.stop()
+		print(n+'Stopped network daemon.')
 		
 
 
