@@ -1,4 +1,4 @@
-python "nettest.py"
+python "launcher.py"
 
 pause
 del "%0"

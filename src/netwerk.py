@@ -193,14 +193,14 @@ class ThreadedSyncManagerServer(object):
 		return syncrecv.decode('utf8')
 class NetworkCoordinator(object):
 	def __init__(self,port,host,owned):
-		manager=ThreadedSyncManagerClient(port,host,self._callback)
-		manager.connect()
-		manager.run()
+		self.manager=ThreadedSyncManagerClient(port,host,self._callback)
+		self.manager.connect()
+		self.manager.run()
 		self.id_num=0
 		self.own=owned
 		self.rects={}
 	def add_ent(self,ent):
-		self.rects[ent.ent_id]=(ent.set_rect,ent.get_rect(),ent.get_rect)
+		self.rects[ent.ent_id]=[ent.set_rect,list(ent.get_rect()),ent.get_rect]
 	def del_ent(self,ent):
 		del self.rects[ent.ent_id]
 	def _callback(self,line,protocool):
@@ -212,11 +212,14 @@ class NetworkCoordinator(object):
 		except (SyntaxError) as e: print(str(traceback.print_exc()))
 		text={}
 		for ent_id,rect_methods in self.rects.items():
-			text[int(ent_id)]=(rect_methods[1].x,rect_methods[1].y,rect_methods[1].w,rect_methods[1].h)
+			text[int(ent_id)]=(rect_methods[1][0],rect_methods[1][1],rect_methods[1][2],rect_methods[1][3])
 		return str(text)
 	def update(self):
 		for key,value in self.rects.items():
-			self.rects[int(key)]=value[4]()
+			print(str(value))
+			self.rects[int(key)][1]=value[2]()
+	def stop(self):
+		self.manager.stop()
 		
 
 
