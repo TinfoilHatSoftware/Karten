@@ -37,6 +37,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.framecounter=0
 		self.energy=200
 		self.health=200
+		self.original_pos=position
 		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
@@ -49,6 +50,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			else:
 				self.framecounter+=1
 			if self.firsttime==True:
+				print('Firsttime derp')
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
 				self.firsttime==False
 				sender.charcont=self

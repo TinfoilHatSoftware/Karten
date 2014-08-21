@@ -12,12 +12,15 @@ class Daemon(object):
 		self.func=func
 		self.args=arguments
 		self.running=False
+		self.firsttime=False
 		def _thread():
 			while self.running==True:
-				self.func(*self.args)
-				if self.args!=[]:
-					self.args=[]
-		self.thread=threading.Thread(target=_thread,args=[])
+				if self.firsttime==True:
+					self.func(*self.args)
+					self.firsttime=False
+				else:
+					self.func([])
+		self.thread=threading.Thread(target=_thread,args=[],name='TSGNetworkingThread')
 		self.thread.daemon=True
 	def start(self,callback):
 		self.args=[callback]
@@ -40,6 +43,7 @@ class ThreadedReactor(object):
 		self.daemon.start(callback)
 	def stop(self):
 		reactor.callFromThread(reactor.stop)
+		del self.daemon
 		self.stopped=True
 		
 		

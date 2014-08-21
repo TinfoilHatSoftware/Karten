@@ -223,6 +223,7 @@ class NetworkCoordinator(object):
 			self.out_text[ent_id]=(rect_methods[1][0],rect_methods[1][1],rect_methods[1][2],rect_methods[1][3])
 	def stop(self):
 		self.manager.stop()
+		del self.manager
 		print(n+'Stopped network daemon.')
 		
 

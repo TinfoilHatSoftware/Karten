@@ -40,9 +40,9 @@ def update(delta,c_map,sender):
 	pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)
 	if sender.charcont.health<=0:
 		teleport_sound2.play()
-		sender.stop()
-		sender.change_map('test_map')
-		sender.run()
+		sender.charcont.set_rect(pygame.rect.Rect(sender.charcont.original_pos[0],sender.charcont.original_pos[1],sender.charcont.rect[2],sender.charcont.rect[3]))
+		sender.charcont.health=200
+		sender.charcont.energy=200
 		framecount=0
 		timecount=0
 	
