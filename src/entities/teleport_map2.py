@@ -40,7 +40,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 	def update(self,delta,sender):
 		if self.going==True:
 			if self.firsttime==True:
-				self.firsttime==False
+				self.firsttime=False
 				self.teleport_sound=pygame.mixer.Sound(join('..','media','sound','teleport.wav'))
 				self.teleport_sound2=pygame.mixer.Sound(join('..','media','sound','teleport_finish.wav'))
 			if self.opening:

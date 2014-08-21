@@ -44,7 +44,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 	def update(self,delta,sender):
 		if self.going==True:
 			if self.firsttime==True:
-				self.firsttime==False
+				self.firsttime=False
 				explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
 				blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
 				self.sounds=(explode_sound,blast_sound)

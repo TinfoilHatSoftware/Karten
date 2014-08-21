@@ -50,9 +50,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			else:
 				self.framecounter+=1
 			if self.firsttime==True:
-				print('Firsttime derp')
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
-				self.firsttime==False
+				self.firsttime=False
 				sender.charcont=self
 				explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
 				blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
