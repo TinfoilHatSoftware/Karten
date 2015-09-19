@@ -1,6 +1,0 @@
-name Zener's Test Game
-mapfiles test_map
-codefile game.tgsource
-resolution 1600 900
-caption Zener Test Game
-initial_map test_map

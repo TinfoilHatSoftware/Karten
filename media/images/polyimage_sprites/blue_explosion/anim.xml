@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<xmlanimation fileext = ".png">
-<state name ="on">
-<frames num_frames="12" frame_prefix="sprite_rmxp_" frame_start_num="1" >
-</frames>
-</state>
-</xmlanimation>
