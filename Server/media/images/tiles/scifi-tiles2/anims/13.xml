@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmlanimation fileext = ".png">
+<state name ="off">
+<frames num_frames="1" frame_prefix="" frame_start_num="13" >
+</frames>
+</state>
+</xmlanimation>
