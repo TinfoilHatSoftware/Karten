@@ -6,6 +6,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 import pickle
+import daswesen
 n='[library conversionist]'
 
 def convertMap(mapx):
@@ -48,6 +49,9 @@ def reverseConvertMap(data,mapobj):
 			for index in clayerindexes:
 				clayers.append(mapobj.collisions_l[int(index)-1])
 			mapobj.add_tile(mapobj.tilesets[tilesetname].tiles[int(tileindex)],mapobj.layers_l[int(layerindex)-1],layerindex,(int(tilex),int(tiley)),clayerindexes,clayers)
+		else:
+			mapobj.tiles.append(daswesen.load_wesen(tilesetname,(int(tilex),int(tiley)),mapobj.layers_l,mapobj.collisions_l,mapobj.reqs_update))
+
 
 
 

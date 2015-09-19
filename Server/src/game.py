@@ -7,9 +7,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 from os.path import join as jpath
 import pygame
+import sys
+import select
 import libkarten
 import imp
 import netwerk
+from pygame.locals import *
 class Game(object):
 	def __init__(self):
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
@@ -24,6 +27,7 @@ class Game(object):
 		self.layer2_c = []
 		self.layer3_c = []
 		self.map_data=None
+		self.input=''
 		self.layer4_c = []
 		self.layer5_c = []
 		self.locking=False
@@ -77,6 +81,10 @@ class Game(object):
 		while self.running:
 			delta=self.clock.tick(500)
 			#print(round(self.clock.get_fps()))
+			pygame.event.pump()
+			keys = pygame.key.get_pressed()
+			if keys[K_ESCAPE]:
+				print(round(self.clock.get_fps()))
 			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
 					self.running = False
