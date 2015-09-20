@@ -5,6 +5,10 @@
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+class Dummy:
+	def add_ent_id_ref(x,y):
+		return 1
+foobar=Dummy()
 n = "[epsiche karten]"
 print (n+"Welcome to the Epische Karten map editor!")
 print (""" 
@@ -428,15 +432,6 @@ os.environ['SDL_WINDOWID'] = str(embed.winfo_id())
 if platform.system()=="Windows":
 	print(n+"Detected Windows platform, using SDL_VIDEODRIVER windib")
 	os.environ['SDL_VIDEODRIVER'] = 'windib'
-elif platform.system()=="Linux":
-	print(n+"Detected Linux platform, using SDL_VIDEODRIVER x11")
-	os.environ['SDL_VIDEODRIVER']='x11'
-elif platform.system()=="Darwin":
-	print(n+"Detected Darwin platform, using SDL_VIDEODRIVER x11")
-	os.environ['SDL_VIDEODRIVER']='x11'
-else:
-	print(n+"Unknown platform, hoping x11 is used and trying SDL_VIDEODRIVER x11")
-	os.environ['SDL_VIDEODRIVER']='x11'
 print(n+"Done.")
 print(n+"Initializing pygame.time.Clock object.")
 myclock = pygame.time.Clock()
@@ -457,7 +452,7 @@ if responsetext.lower()=="o":
 	print(n+"Creating Karte map object.")
 	map_var=libkarten.Karte([layer1,layer2,layer3,layer4,layer5],[layer1_c,layer2_c,layer3_c,layer4_c,layer5_c],reqs_update)
 	print(n+"Loading map.")
-	map_var.fromxml(f_path)
+	map_var.fromxml(f_path,foobar)
 	print(n+"Done.")
 	root.update()
 	pygame.display.flip()
