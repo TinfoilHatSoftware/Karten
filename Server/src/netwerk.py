@@ -23,7 +23,7 @@ def makebytes(string_var):
 	return string_var.encode('utf8')
 class GameClientProtocol(LineReceiver):
 	def __init__(self,callback):
-		self.state='INIT'
+		self.state='SETNAME'
 		self.mapname=''
 		self.callback=callback
 		self.username=''
@@ -31,24 +31,22 @@ class GameClientProtocol(LineReceiver):
 	def connectionMade(self):
 		print(n+'Connection  protocol fully initialized.')
 	def	lineReceived(self, line):
-		if self.state=='INIT':
-			print(line)
-
+		self.callback(line)
 class GameClientFactory(ClientFactory):
-	def __init__(self,callback):
-		self.callback=callback
-	def startedConnecting(self, connector):
-		print (n+'Connecting...')
+    def __init__(self,callback):
+        self.callback=callback
+    def startedConnecting(self, connector):
+        print (n+'Connecting...')
 
-	def buildProtocol(self, addr):
-		print (n+'Connected.')
-		return GameClientProtocol(self.callback)
+    def buildProtocol(self, addr):
+        print (n+'Connected.')
+        return GameClientProtocol(self.callback)
 
-	def clientConnectionLost(self, connector, reason):
-		print (n+'Lost connection.  Reason:', reason)
+    def clientConnectionLost(self, connector, reason):
+        print (n+'Lost connection.  Reason:', reason)
 
-	def clientConnectionFailed(self, connector, reason):
-		print (n+'Connection failed. Reason:', reason)
+    def clientConnectionFailed(self, connector, reason):
+        print (n+'Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
 	def __init__(self, users, addr,objectx,callback):
 		self.addr=addr

@@ -128,7 +128,6 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						self.rect.top = sprite.rect.bottom
 			#for x in self.c_layers[0]:
 				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
-			print(self.rect.width)
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):

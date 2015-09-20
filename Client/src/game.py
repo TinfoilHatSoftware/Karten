@@ -14,7 +14,7 @@ import conversionist
 import netwerk
 class Game(object):
 	def __init__(self):
-		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
+		self.flags = pygame.DOUBLEBUF | pygame.HWSURFACE
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
 		self.fp.seek(0)
 		for line in self.fp.readlines():
@@ -30,6 +30,8 @@ class Game(object):
 		self.layer1_c = []
 		self.layer2_c = []
 		self.layer3_c = []
+		self.ents_by_id={}
+		self.curr_id=0
 		self.map_data=None
 		self.layer4_c = []
 		self.layer5_c = []
@@ -73,10 +75,11 @@ class Game(object):
 		self.netmgr.run()
 		while self.map_data==None:
 			pass
+		print('through')
 		self.yres=int(self.yres)
 		self.xres=int(self.xres)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
-		conversionist.reverseConvertMap(self.map_data,self.c_map)
+		conversionist.reverseConvertMap(self.map_data,self.c_map,self)
 		for tile in self.c_map.tiles:
 			is_wesen=True
 			try:
@@ -100,6 +103,8 @@ class Game(object):
 					self.running = False
 			for ent in self.reqs_update:
 				ent.update(delta,self)
+			for key,value in self.ents_by_id.items():
+				print(key,value.name)
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_ESCAPE]:
 				self.running=False
@@ -173,6 +178,9 @@ class Game(object):
 		self.camera_pos=(entrectref()[0],entrectref()[1])
 	def _netcallback(self,data):
 		self.map_data=data
+	def add_ent_id_ref(self,ent):
+		self.ents_by_id[self.curr_id]=ent
+		self.curr_id+=1
 		
 		
 		

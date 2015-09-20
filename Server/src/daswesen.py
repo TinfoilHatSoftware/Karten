@@ -14,11 +14,11 @@ class GrafikWesenBase(pygame.sprite.Sprite):
 	def __init__(self,animation,positionxy,collision_layers,collision_layers_index,draw_layer,draw_layer_index,initial_graphic_state):
 		super(GrafikWesenBase,self).__init__()
 		self.animation=animation
-		self.l_index=draw_layer_index
 		self.image=self.animation.get_frame(initial_graphic_state[0],initial_graphic_state[1])
-		self.rect=self.image.get_rect()
 		self.c_layer_indexes=collision_layers_index
+		self.rect=self.image.get_rect()
 		self.add(self.layer)
+		self.l_index=draw_layer_index
 		self.state=initial_graphic_state[0]
 		self.frame=initial_graphic_state[1]
 		self.c_layers=collision_layers
@@ -63,7 +63,7 @@ def get_ent_directives(entname):
 	print(directives_thing)
 	return directives_thing
 
-def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update_var_thing):
+def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update_var_thing,root):
 	directives=get_ent_directives(wesen_name)
 	loaderargs=[]
 	reqs_update_var=False
@@ -86,6 +86,7 @@ def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update
 	ent=module.WesenEnt(*loaderargs)
 	if reqs_update_var:
 		reqs_update_var_thing.append(ent)
+	root.add_ent_id_ref(ent)
 	return ent
 def load_wesen_constructor(wesen_name):
 	module = imp.load_source(wesen_name, os.path.join("entities",wesen_name+".py"))

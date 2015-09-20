@@ -28,6 +28,8 @@ class Game(object):
 		self.layer3_c = []
 		self.map_data=None
 		self.input=''
+		self.ents_by_id={}
+		self.curr_id=0
 		self.layer4_c = []
 		self.layer5_c = []
 		self.locking=False
@@ -64,7 +66,7 @@ class Game(object):
 		self.manager.listen()
 		self.manager.run()
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
-		self.c_map.fromxml(self.initial_map)
+		self.c_map.fromxml(self.initial_map,self)
 		for tile in self.c_map.tiles:
 			is_wesen=True
 			try:
@@ -79,6 +81,8 @@ class Game(object):
 		self.running=True
 		self.clock.tick(500)
 		while self.running:
+			for key,value in self.ents_by_id.items():
+				print(key,value.name)
 			delta=self.clock.tick(500)
 			#print(round(self.clock.get_fps()))
 			pygame.event.pump()
@@ -119,6 +123,9 @@ class Game(object):
 		self.entrectref2=entrectref2
 		self.locking=True
 		self.camera_pos=(entrectref()[0],entrectref()[1])
+	def add_ent_id_ref(self,ent):
+		self.ents_by_id[self.curr_id]=ent
+		self.curr_id+=1
 		
 		
 		

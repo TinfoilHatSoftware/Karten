@@ -46,62 +46,26 @@ class GameClientFactory(ClientFactory):
     def clientConnectionFailed(self, connector, reason):
         print (n+'Connection failed. Reason:', reason)
 class GameServerProtocol(LineReceiver):
-	def __init__(self, users, addr,mapname,callback):
+	def __init__(self, users, addr,objectx,callback):
 		self.addr=addr
 		self.users = users
 		self.username = None
 		self.callback=callback
-		self.mapname=mapname
-		self.state = "LOGIN"
-		n='[netwerks server]'
-
+		self.objectx=objectx
+		self.state = "INIT"
+		self.n='[netwerks server]'
+	def handle_INIT(self,line):
+		print(line)
 	def connectionMade(self):
-		print(n+"Connection made from client at "+str(self.addr))
-		self.sendLine(b'CONNECTED')
+		print(self.n+"Connection made from client at "+str(self.addr))
+		self.sendLine(conversionist.convertMap(self.objectx))
 	def connectionLost(self, reason):
 		if self.username in self.users:
 			del self.users[self.username]
 			print(n+'Connection lost from '+str(self.addr))
-	def handle_LOGIN(self, name):
-		if name in self.users:
-			self.sendLine(makebytes('TAKEN'))
-			return
-		self.sendLine(makebytes('ACK_LOGIN'))
-		self.username = name.decode('utf8')
-		self.users[name] = self
-		self.state = "GET_MAP_NAME"
-		print(n+"Connection at address "+str(self.addr)+" set username to "+"'"+str(self.username)+"'")
-		print(n+"User list is now:"+str(self.users))
-	def handle_GET_MAP(self,line):
-		if line.decode('utf8')=="GOT_MAPS":
-			self.state="RUNNING"
-			print(n+"Connection with name "+str(self.username)+ " finished getting maps and is now in state RUNNING")
-		else:
-			try:
-				self.sendLine(makebytes(str(open(pathjoin("..","media","maps_xml",line.decode('utf8')+'.xml')).read())))
-				print(n+"Connection with name "+str(self.username)+ " requested and recieved valid mapfile named "+str(line.decode('utf8')))
-			except IOError:
-				self.sendLine(makebytes('BAD_MAPNAME'))
-				print(n+"Connection with name "+str(self.username)+ " requested invalid map "+str(line.decode('utf8')))
-				time.sleep(5)
-	def handle_RUNNING(self,line):
-		self.sync_send=self.callback(line,self)
-		for name, protocol in list(self.users.items()):
-			if protocol != self:
-				protocol.sendLine(self.sync_send.encode('utf8'))
-	def handle_GET_MAP_NAME(self,line):
-		self.sendLine(makebytes(self.mapname))
-		self.sendLine(makebytes(self.mapname))
-		self.state="GET_MAP"
 	def lineReceived(self, line):
-		if self.state == "LOGIN":
-			self.handle_LOGIN(line)
-		elif self.state=="GET_MAP":
-			self.handle_GET_MAP(line)
-		elif self.state=="GET_MAP_NAME":
-			self.handle_GET_MAP_NAME(line)
-		else:
-			self.handle_RUNNING(line)
+		if self.state=='INIT':
+			self.handle_INIT(line)
 
 
 class GameServerFactory(Factory):
@@ -128,12 +92,12 @@ class ThreadedSyncManagerClient(object):
 		self.reactor.stop()
 		
 class ThreadedSyncManagerServer(object):
-	def __init__(self,port,map_to_provide):
+	def __init__(self,port,objectx):
 		self.reactor=threadsutil.ThreadedReactor()
 		self.PORT=int(port)
-		self.map_to_provide=map_to_provide
+		self.objectx=objectx
 	def listen(self):
-		self.reactor.listenTCP(self.PORT, GameServerFactory(self.map_to_provide,self._callback))
+		self.reactor.listenTCP(self.PORT, GameServerFactory(self.objectx,self._callback))
 	def run(self):
 		self.reactor.run(self._callback)
 	def stop(self):

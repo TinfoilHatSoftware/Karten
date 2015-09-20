@@ -1,3 +1,4 @@
+#  Cthulhu was here
 #  animations.py
 #  
 #  Copyright 2014 Jacob Swart
