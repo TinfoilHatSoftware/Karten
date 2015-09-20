@@ -44,6 +44,7 @@ def update(delta,c_map,sender):
 		teleport_sound2.play()
 		sender.charcont.set_rect(pygame.rect.Rect(sender.charcont.original_pos[0],sender.charcont.original_pos[1],sender.charcont.rect[2],sender.charcont.rect[3]))
 		sender.charcont.health=200
+		sender.charcont.yvel=1
 		sender.charcont.energy=200
 		framecount=0
 		timecount=0

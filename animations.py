@@ -26,16 +26,12 @@ class XMLAnimation:
 				i=0
 				i = int(frames.get("frame_start_num"))
 				while i < int(frames.get("frame_start_num"))+int(frames.get("num_frames")):
-					self.frames_temp.append(pygame.image.load(path.join(self.path_from_here,"imgs",(frames.get("frame_prefix")+str(i)+self.xml_tree_root.get("fileext")))))
+					self.frames_temp.append(pygame.image.load(path.join(self.path_from_here,"imgs",(frames.get("frame_prefix")+str(i)+self.xml_tree_root.get("fileext")))).convert_alpha())
 					i+=1
 			self.states[state.get("name")] = self.frames_temp
 		print("[animations.py]Read state:framelist combos:"+str(self.states)+".")
 		self.xml_tree=None
 		self.xml_tree_root=None
-		keys=list(self.states.keys())
-		for key in keys:
-			for frame in self.states[key]:
-				frame=frame.convert_alpha()
 	def get_frame(self,state_name,frame_num):
 		return self.states[state_name][frame_num]
 class XMLTileAnimation:
@@ -56,15 +52,12 @@ class XMLTileAnimation:
 				i=0
 				i = int(frames.get("frame_start_num"))
 				while i < int(frames.get("frame_start_num"))+int(frames.get("num_frames")):
-					self.frames_temp.append(pygame.image.load(path.join(self.path_to_xml_files,"images",(frames.get("frame_prefix")+str(i)+self.xml_tree_root.get("fileext")))))
+					self.frames_temp.append(pygame.image.load(path.join(self.path_to_xml_files,"images",(frames.get("frame_prefix")+str(i)+self.xml_tree_root.get("fileext")))).convert_alpha())
 					i+=1
 			self.states[state.get("name")] = self.frames_temp
 		print("[animations.py]Read state:framelist combos:"+str(self.states)+".")
 		self.xml_tree=None
 		self.xml_tree_root=None
 		keys=list(self.states.keys())
-		for key in keys:
-			for frame in self.states[key]:
-				frame=frame.convert_alpha()
 	def get_frame(self,state_name,frame_num):
 		return self.states[state_name][frame_num]

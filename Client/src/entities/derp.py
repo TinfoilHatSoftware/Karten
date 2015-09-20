@@ -29,7 +29,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.counter=0
 		self.projectiles=[]
 		self.xvel=0
-		self.yvel=0
+		self.yvel=1
 		self.frame=0
 		self.going=False
 		self.moving=False
@@ -78,36 +78,40 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						self.energy-=50
 						self.projectiles.append(projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self))
 			keys=pygame.key.get_pressed()
+			derp=False
+			derp2=False
 			if keys[pygame.K_a]:
-				self.rect.x-=delta/4
 				self.xvel=-1
-				self.yvel=0
+				#self.yvel=0
 				self.state='left'
 				self.moving=True
-			elif keys[pygame.K_w]:
-				self.rect.y-=delta/4
-				self.yvel=-1
-				self.xvel=0
-				self.state='up'
-				self.moving=True
-			elif keys[pygame.K_s]:
-				self.rect.y+=delta/4
-				self.yvel=1
-				self.xvel=0
-				self.state='down'
-				self.moving=True
 			elif keys[pygame.K_d]:
-				self.rect.x+=delta/4
 				self.xvel=1
-				self.yvel=0
+				#self.yvel=0
 				self.state='right'
 				self.moving=True
 			else:
+				derp=True
+			if keys[pygame.K_w]:
+				if self.bottomed:
+					self.rect.y-=20
+				self.moving=True
+			else:
+				derp2=True
+			#elif keys[pygame.K_s]:
+			#	self.rect.y+=delta/4
+			#	self.yvel=1
+			#	self.xvel=0
+			#	self.state='down'
+			#	self.moving=True
+			if derp and derp2:
 				self.moving=False
 				self.frame=0
 				self.xvel=0
-				self.yvel=0
+				#self.yvel=0
 				self.set_state_and_frame(self.state,self.frame)
+			self.rect.x+=self.xvel*(delta/2)
+			self.rect.y+=self.yvel*(delta)
 			if self.counter>=100 and self.moving:
 				self.counter=0
 				if self.frame==len(self.animation.states[self.state])-1:
@@ -116,19 +120,26 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				else:
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
+			self.bottomed=False
 			for sprite in pygame.sprite.spritecollide(self,self.c_layers[0],False):
 				if sprite!=self and sprite not in self.projectiles:
 					if self.xvel > 0: # Moving right; Hit the left side of the wall
 						self.rect.right = sprite.rect.left
-					if self.xvel < 0: # Moving left; Hit the right side of the wall
+					elif self.xvel < 0: # Moving left; Hit the right side of the wall
 						self.rect.left = sprite.rect.right
-					if self.yvel > 0: # Moving down; Hit the top side of the wal
+					elif self.yvel > 0: # Moving down; Hit the top side of the wal
 						self.rect.bottom = sprite.rect.top
-					if self.yvel < 0: # Moving up; Hit the bottom side of the wal
+					elif self.yvel < 0: # Moving up; Hit the bottom side of the wal
 						self.rect.top = sprite.rect.bottom
+					self.grounded=False
+					if sprite.rect.collidepoint(self.rect.centerx,self.rect.bottom+4):
+						self.grounded=True
+					if self.grounded==True:
+						self.yvel=0
+					else:
+						self.yvel=1
 			#for x in self.c_layers[0]:
 				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
-			print(self.rect.width)
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):
