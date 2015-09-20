@@ -30,6 +30,7 @@ class Game(object):
 		self.layer1_c = []
 		self.layer2_c = []
 		self.layer3_c = []
+		self.protocol=None
 		self.ents_by_id={}
 		self.curr_id=0
 		self.map_data=None
@@ -75,7 +76,6 @@ class Game(object):
 		self.netmgr.run()
 		while self.map_data==None:
 			pass
-		print('through')
 		self.yres=int(self.yres)
 		self.xres=int(self.xres)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
@@ -103,8 +103,6 @@ class Game(object):
 					self.running = False
 			for ent in self.reqs_update:
 				ent.update(delta,self)
-			for key,value in self.ents_by_id.items():
-				print(key,value.name)
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_ESCAPE]:
 				self.running=False
@@ -147,7 +145,7 @@ class Game(object):
 			for r in list(self.layer5):
 				r.rect.x,r.rect.y=oldrects[r]
 			self.game_code.update(delta,self.c_map,self)
-			pygame.display.update((0,0,self.xres,self.yres))
+			pygame.display.update()
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
 		print(self.n+"Changing map to "+map_name+".")
@@ -176,8 +174,37 @@ class Game(object):
 		self.entrectref2=entrectref2
 		self.locking=True
 		self.camera_pos=(entrectref()[0],entrectref()[1])
-	def _netcallback(self,data):
-		self.map_data=data
+	def _netcallback(self,data,sender):
+		if self.protocol!=sender:	self.protocol=sender
+		print(data)
+		if self.map_data==None:
+			self.map_data=data
+			return
+		items=data.decode('utf8')
+		if items[0]=="#":
+			pass
+		else:
+			self.id_num=int(items)
+			print(self.n+"Current ID:"+str(self.id_num))
+			return
+		items=items[1:]
+		items=items.split(" ")
+		i=1
+		y=[]
+		z=[]
+		print(items)
+		for x in items:
+			x=int(x)
+			y.append(x)
+			if i%2==0 and i!=0 and i!=1:
+				print(y)
+				print(x)
+				z.append((y[0],y[1]))
+			i+=1
+		items=z
+		for idx,ent in self.ents_by_id.items():
+			ent.rect.x=items[idx][0]
+			ent.rect.y=items[idx][1]
 	def add_ent_id_ref(self,ent):
 		self.ents_by_id[self.curr_id]=ent
 		self.curr_id+=1

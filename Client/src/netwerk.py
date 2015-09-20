@@ -1,3 +1,5 @@
+
+
 #  netwerks.py
 #  
 #  Copyright 2014 Jacob Swart
@@ -29,7 +31,8 @@ class GameClientProtocol(LineReceiver):
 	def connectionMade(self):
 		print(n+'Connection  protocol fully initialized.')
 	def	lineReceived(self, line):
-		self.callback(line)
+		#print(str(line)+"HELLO")
+		self.callback(line,self)
 class GameClientFactory(ClientFactory):
     def __init__(self,callback):
         self.callback=callback
@@ -66,6 +69,8 @@ class GameServerProtocol(LineReceiver):
 	def lineReceived(self, line):
 		if self.state=='INIT':
 			self.handle_INIT(line)
+	def transmit(self,line):
+		self.sendLine(line)
 
 
 class GameServerFactory(Factory):
@@ -120,6 +125,7 @@ class NetworkCoordinator(object):
 	def del_ent(self,ent):
 		del self.rects[ent.ent_id]
 	def _callback(self,line,protocool):
+		print(line)
 		try:
 			for k,v in eval(line.decode().replace('RUNNING','')).items():
 				self.latest_data[k]=v

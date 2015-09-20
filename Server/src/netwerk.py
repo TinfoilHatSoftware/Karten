@@ -61,6 +61,7 @@ class GameServerProtocol(LineReceiver):
 	def connectionMade(self):
 		print(self.n+"Connection made from client at "+str(self.addr))
 		self.sendLine(conversionist.convertMap(self.objectx))
+		self.sendLine(self.callback(0,self))
 	def connectionLost(self, reason):
 		if self.username in self.users:
 			del self.users[self.username]
@@ -68,6 +69,9 @@ class GameServerProtocol(LineReceiver):
 	def lineReceived(self, line):
 		if self.state=='INIT':
 			self.handle_INIT(line)
+	def transmit(self,line):
+		print(line)
+		self.sendLine(line)
 
 
 class GameServerFactory(Factory):
@@ -94,19 +98,20 @@ class ThreadedSyncManagerClient(object):
 		self.reactor.stop()
 		
 class ThreadedSyncManagerServer(object):
-	def __init__(self,port,objectx):
+	def __init__(self,port,objectx,callback):
 		self.reactor=threadsutil.ThreadedReactor()
 		self.PORT=int(port)
 		self.objectx=objectx
+		self.callback=callback
 	def listen(self):
-		self.reactor.listenTCP(self.PORT, GameServerFactory(self.objectx,self._callback))
+		self.reactor.listenTCP(self.PORT, GameServerFactory(self.objectx,self.callback))
 	def run(self):
-		self.reactor.run(self._callback)
+		self.reactor.run(self.callback)
 	def stop(self):
 		#Destroy this class instance after this, not safe to call run() to restart
 		self.reactor.stop()
-	def _callback(self,syncrecv,network):
-		return syncrecv.decode('utf8')
+	#def _callback(self,syncrecv,network):
+		#return syncrecv.decode('utf8')
 class NetworkCoordinator(object):
 	def __init__(self,port,host,owned):
 		self.manager=ThreadedSyncManagerClient(port,host,self._callback)

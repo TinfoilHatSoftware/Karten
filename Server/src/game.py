@@ -25,7 +25,9 @@ class Game(object):
 		self.layer5 = pygame.sprite.Group()
 		self.layer1_c = []
 		self.layer2_c = []
+		self.rem_index_curr=0
 		self.layer3_c = []
+		self.clients=[]
 		self.map_data=None
 		self.input=''
 		self.ents_by_id={}
@@ -62,7 +64,7 @@ class Game(object):
 		print(self.n+'Done.')
 	def run(self):
 		print(self.n+'Running.')
-		self.manager=netwerk.ThreadedSyncManagerServer(25565,self)
+		self.manager=netwerk.ThreadedSyncManagerServer(25565,self,self._net_callback)
 		self.manager.listen()
 		self.manager.run()
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
@@ -81,8 +83,6 @@ class Game(object):
 		self.running=True
 		self.clock.tick(500)
 		while self.running:
-			for key,value in self.ents_by_id.items():
-				print(key,value.name)
 			delta=self.clock.tick(500)
 			#print(round(self.clock.get_fps()))
 			pygame.event.pump()
@@ -95,6 +95,13 @@ class Game(object):
 			for ent in self.reqs_update:
 				ent.update(delta,self)
 			self.game_code.update(delta,self.c_map,self)
+			bleh=[0] * len(self.ents_by_id.keys())
+			for key,value in self.ents_by_id.items():
+				bleh[key]=str(value.rect.x)+" "+str(value.rect.y)
+			data=' '.join(str(e) for e in bleh)
+			data=('#'+data).encode('utf8')
+			for x in self.clients:
+				x.transmit(data)
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
 		print(self.n+"Changing map to "+map_name+".")
@@ -126,6 +133,15 @@ class Game(object):
 	def add_ent_id_ref(self,ent):
 		self.ents_by_id[self.curr_id]=ent
 		self.curr_id+=1
+	def _net_callback(self,x,y=None):
+		#print(x,y)
+		if not y in self.clients and y!=None:
+			self.clients.append(y)
+		if x==0:
+			idx=self.rem_index_curr
+			self.rem_index_curr+=1
+			return str(idx).encode('utf8')
+
 		
 		
 		
