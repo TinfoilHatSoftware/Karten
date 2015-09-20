@@ -27,10 +27,10 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.ent_id=0
 		self.localplayerchar=True
 		self.counter=0
+		self.projectiles=[]
 		self.xvel=0
 		self.yvel=0
 		self.frame=0
-		self.tileset_name='derp'
 		self.going=False
 		self.moving=False
 		self.is_wesen=True
@@ -76,7 +76,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 							y=1
 							x=0
 						self.energy-=50
-						projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self)
+						self.projectiles.append(projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self))
 			keys=pygame.key.get_pressed()
 			if keys[pygame.K_a]:
 				self.rect.x-=delta/4
@@ -116,17 +116,19 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				else:
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
-			for wall in sender.c_map.tiles:	
-				if self.rect.colliderect(wall.rect) and self.c_layers[0] in wall.c_layers and wall!=self:
+			for sprite in pygame.sprite.spritecollide(self,self.c_layers[0],False):
+				if sprite!=self and sprite not in self.projectiles:
 					if self.xvel > 0: # Moving right; Hit the left side of the wall
-						self.rect.right = wall.rect.left
-						print(self.rect.right,self.rect.left)
+						self.rect.right = sprite.rect.left
 					if self.xvel < 0: # Moving left; Hit the right side of the wall
-						self.rect.left = wall.rect.right
+						self.rect.left = sprite.rect.right
 					if self.yvel > 0: # Moving down; Hit the top side of the wal
-						self.rect.bottom = wall.rect.top
+						self.rect.bottom = sprite.rect.top
 					if self.yvel < 0: # Moving up; Hit the bottom side of the wal
-						self.rect.top = wall.rect.bottom
+						self.rect.top = sprite.rect.bottom
+			#for x in self.c_layers[0]:
+				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
+			print(self.rect.width)
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):

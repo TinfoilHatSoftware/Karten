@@ -62,11 +62,10 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				projectiles.Explosion(self.rect.center,self.layer,sender.reqs_update,self.projectile_anims[0],self,self.sounds[0])
 				sender.c_map.tiles.remove(self)
 				self.going=False
+				for x in self.c_layers:
+					x.remove(self)
 				self.exploded=True
-		if self.exploded:
-			self.kill()
-			self.tile_kill()
-			return
+				del self
 	def go(self):
 		self.going=True
 	def tile_kill(self):

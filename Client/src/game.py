@@ -7,13 +7,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 from os.path import join as jpath
 import pygame
+import timeit
 import libkarten
 import imp
 import conversionist
 import netwerk
 class Game(object):
 	def __init__(self):
-		self.flags = pygame.DOUBLEBUF | pygame.HWSURFACE
+		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
 		self.fp.seek(0)
 		for line in self.fp.readlines():
@@ -90,15 +91,18 @@ class Game(object):
 			except NameError as e:
 				print(self.n+'Warning:Ent '+str(ent)+' does not have method go, ignoring.')
 		self.running=True
-		self.clock.tick(500)
+		self.clock.tick(60)
 		while self.running:
-			delta=self.clock.tick(500)
+			delta=self.clock.tick(60)
 			self.screen.fill((0,0,0))
 			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
 					self.running = False
 			for ent in self.reqs_update:
 				ent.update(delta,self)
+			keys=pygame.key.get_pressed()
+			if keys[pygame.K_ESCAPE]:
+				self.running=False
 			oldrects={}
 			if self.locking==True:
 				self.camera_pos=(-self.entrectref().center[0]+self.xres/2,-self.entrectref().center[1]+self.yres/2)
