@@ -68,7 +68,7 @@ def get_ent_directives(entname):
 	#print(directives_thing)
 	return directives_thing
 
-def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update_var_thing,root):
+def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update_var_thing,root,ent_id=None):
 	directives=get_ent_directives(wesen_name)
 	loaderargs=[]
 	reqs_update_var=False
@@ -91,7 +91,10 @@ def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update
 	ent=module.WesenEnt(*loaderargs)
 	if reqs_update_var:
 		reqs_update_var_thing.append(ent)
-	root.add_ent_id_ref(ent)
+	if ent_id!=None:
+		root.add_ent_id_ref(ent,ent_id)
+	else:
+		root.add_ent_id_ref(ent)
 	return ent
 def load_wesen_constructor(wesen_name):
 	module = imp.load_source(wesen_name, os.path.join("entities",wesen_name+".py"))

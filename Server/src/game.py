@@ -132,6 +132,8 @@ class Game(object):
 		self.camera_pos=(entrectref()[0],entrectref()[1])
 	def add_ent_id_ref(self,ent):
 		self.ents_by_id[self.curr_id]=ent
+		ent.id=self.curr_id
+		print(self.ents_by_id)
 		for key,value in self.ents_by_id.items():
 			print(key,value.name)
 		self.curr_id+=1
@@ -148,14 +150,16 @@ class Game(object):
 			idx=self.rem_index_curr
 			self.rem_index_curr+=1
 			y.idx=idx
-			ent=self.c_map.loadWesenWithID('derp',(192,64),self.reqs_update,idx,self)
+			id2=self.curr_id
+			ent=self.c_map.loadWesenWithID('derp',(192,150),self.reqs_update,idx,self)
 			y.sendLine(str(idx).encode('utf8'))
-			data='@derp 192 64 %s' % idx
+			data='@derp 192 64 %s %s' % (idx,id2)
 			return data.encode('utf8')
 		if x[0]=='$':
 			x=x[1:]
 			x=x.split()
 			self.input[y.idx]=x
+			#print(self.input)
 
 		
 		

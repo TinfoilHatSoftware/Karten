@@ -29,7 +29,10 @@ def convertMap(mapx):
 		if iswesen:
 			tile.index=0
 			tile.tileset_name=tile.name
-		all_tiles.append((iswesen,tile.tileset_name,tile.l_index,tile.c_layer_indexes,tile.index,tile.rect.x,tile.rect.y))
+			ent_id=tile.id
+		else:
+			ent_id=0
+		all_tiles.append((iswesen,tile.tileset_name,tile.l_index,tile.c_layer_indexes,tile.index,tile.rect.x,tile.rect.y,ent_id))
 	bytes_data=pickle.dumps((all_tiles,tilesets))
 	return bytes_data
 def reverseConvertMap(data,mapobj,sender):
@@ -43,14 +46,14 @@ def reverseConvertMap(data,mapobj,sender):
 		else:
 			mapobj.load_entdef(name)
 	for tile in tiles:
-		iswesen,tilesetname,layerindex,clayerindexes,tileindex,tilex,tiley=tile
+		iswesen,tilesetname,layerindex,clayerindexes,tileindex,tilex,tiley,ent_id=tile
 		if not iswesen:
 			clayers=[]
 			for index in clayerindexes:
 				clayers.append(mapobj.collisions_l[int(index)-1])
 			mapobj.add_tile(mapobj.tilesets[tilesetname].tiles[int(tileindex)],mapobj.layers_l[int(layerindex)-1],layerindex,(int(tilex),int(tiley)),clayerindexes,clayers)
 		else:
-			ent=daswesen.load_wesen(tilesetname,(int(tilex),int(tiley)),mapobj.layers_l,mapobj.collisions_l,mapobj.reqs_update,sender)
+			ent=daswesen.load_wesen(tilesetname,(int(tilex),int(tiley)),mapobj.layers_l,mapobj.collisions_l,mapobj.reqs_update,sender,ent_id)
 			mapobj.tiles.append(ent)
 
 

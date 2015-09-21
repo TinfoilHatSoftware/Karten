@@ -184,10 +184,17 @@ class Karte(object):
 				tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
 			iswesen=None
 		return ET.tostring(root)
-	def loadWesenWithID(self,ent,pos,reqs_update,owner,sender):
-		ent=daswesen.load_wesen(ent,pos,self.layers_l,self.collisions_l,reqs_update,sender)
-		ent.owner=owner
+	def loadWesenWithID(self,ent,pos,reqs_update,owner,sender,ent_id=None):
+		if ent_id!=None:
+			ent=daswesen.load_wesen(ent,pos,self.layers_l,self.collisions_l,reqs_update,sender,ent_id)
+			ent.owner=owner
+		else:
+			ent=daswesen.load_wesen(ent,pos,self.layers_l,self.collisions_l,reqs_update,sender)
+			ent.owner=owner
 		self.tiles.append(ent)
+		try:
+			ent.go()
+		except:	pass
 class EntTilesetMockup(object):
 	def __init__(self,ent_name):
 		ent=daswesen.load_wesen_constructor(ent_name)

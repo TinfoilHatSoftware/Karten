@@ -52,9 +52,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			inputx=sender.input[self.owner]
 		except:
 			pass
-		
+		#print(inputx)
 		if self.going==True:
-			
 			if self.framecounter==50:
 				self.framecounter=0
 				if self.energy<200:
@@ -130,6 +129,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
 			self.bottomed=False
+			print(self.xvel)
 			self.rect.x+=self.xvel*(delta/100)
 			self.collide(self.xvel,0)
 			#self.collided=False
@@ -152,6 +152,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					#	self.yvel=1
 			#for x in self.c_layers[0]:
 				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
+		#print(self.rect.x,self.rect.y)
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):

@@ -72,7 +72,7 @@ class Game(object):
 		self.camera_pos=(0,0)
 		print(self.n+'Done.')
 	def run(self):
-		print(self.n+'Running.')
+		
 		self.netmgr=netwerk.ThreadedSyncManagerClient(26642,'127.0.0.1',self._netcallback)
 		self.netmgr.connect()
 		self.netmgr.run()
@@ -97,6 +97,7 @@ class Game(object):
 				print(self.n+'Warning:Ent '+str(ent)+' does not have method go, ignoring.')
 		self.running=True
 		self.clock.tick(500)
+		print(self.n+'Running.')
 		while self.running:
 			delta=self.clock.tick(500)
 			self.screen.fill((0,0,0))
@@ -192,7 +193,7 @@ class Game(object):
 		else:
 			if items[0]=='@':
 				x=items[1:].split(' ')
-				self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self)
+				self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self,int(x[4]))
 				return
 			else:	
 				self.id_num=int(items)
@@ -229,8 +230,13 @@ class Game(object):
 			inputv+='a '
 		inputv='$'+inputv
 		return inputv.encode('utf8')
-	def add_ent_id_ref(self,ent,x):
-		self.ents_by_id[self.curr_id]=ent
+	def add_ent_id_ref(self,ent,ent_id=None):
+		if ent_id==None:
+			self.ents_by_id[self.curr_id]=ent
+			ent.id=self.curr_id
+		else:
+			self.ents_by_id[ent_id]=ent
+			ent.id=ent_id
 		for key,value in self.ents_by_id.items():
 			print(key,value.name)
 		self.curr_id+=1
