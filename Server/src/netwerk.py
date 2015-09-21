@@ -67,7 +67,7 @@ class GameServerProtocol(LineReceiver):
 			del self.users[self.username]
 			print(n+'Connection lost from '+str(self.addr))
 	def lineReceived(self, line):
-		self.callback(line)
+		self.callback(line,self)
 	def transmit(self,line):
 		#print(line)
 		self.sendLine(line)

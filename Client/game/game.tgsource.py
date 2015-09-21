@@ -22,6 +22,8 @@ global framecount
 framecount=0
 global timecount
 timecount=0
+global firsttime
+firsttime=True
 
 def update(delta,c_map,sender):
 	global mono_font
@@ -30,18 +32,26 @@ def update(delta,c_map,sender):
 	global framecount
 	global timecount
 	global firsttime
-	framecount+=1
-	timecount+=delta/1000
-	sender.screen.blit(energy_label,(80,30))
-	pygame.draw.rect(sender.screen,(0,255,0),(11,11,sender.charcont.energy,13))
-	pygame.draw.rect(sender.screen,(128,128,128),(10,10,201,15),2)
-	img=mono_font3.render('FPS: '+str(round(sender.clock.get_fps())),False,(255,255,255))
-	sender.screen.blit(img,(30,int(sender.yres-30)))
-	sender.screen.blit(health_label,(int(sender.xres)-140,30))
-	pygame.draw.rect(sender.screen,(0,255,0),(int(sender.xres)-211,11,sender.charcont.health,13))
-	pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)
-	if sender.charcont.health<=0:
-		pass
+	if firsttime:
+		for ent in sender.reqs_update:
+			try:
+				if ent.owner==sender.idx:
+					sender.charcont=ent
+			except Exception as a:
+				pass
+				#print(a)
+	#framecount+=1
+	#timecount+=delta/1000
+	#sender.screen.blit(energy_label,(80,30))
+	#pygame.draw.rect(sender.screen,(0,255,0),(11,11,sender.charcont.energy,13))
+	#pygame.draw.rect(sender.screen,(128,128,128),(10,10,201,15),2)
+	#img=mono_font3.render('FPS: '+str(round(sender.clock.get_fps())),False,(255,255,255))
+	#sender.screen.blit(img,(30,int(sender.yres-30)))
+	#sender.screen.blit(health_label,(int(sender.xres)-140,30))
+	#pygame.draw.rect(sender.screen,(0,255,0),(int(sender.xres)-211,11,sender.charcont.health,13))
+	#pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)
+	#if sender.charcont.health<=0:
+	#	pass
 		#teleport_sound2.play()
 		#sender.charcont.set_rect(pygame.rect.Rect(sender.charcont.original_pos[0],sender.charcont.original_pos[1],sender.charcont.rect[2],sender.charcont.rect[3]))
 		#sender.charcont.health=200

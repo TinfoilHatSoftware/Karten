@@ -18,13 +18,13 @@ def update(delta,c_map,sender):
 	global framecount
 	global timecount
 	global firsttime
-	framecount+=1
-	timecount+=delta/1000
-	if sender.charcont.health<=0:
-		teleport_sound2.play()
-		sender.charcont.set_rect(pygame.rect.Rect(sender.charcont.original_pos[0],sender.charcont.original_pos[1],sender.charcont.rect[2],sender.charcont.rect[3]))
-		sender.charcont.health=200
-		sender.charcont.energy=200
-		framecount=0
-		timecount=0
+	#framecount+=1
+	#timecount+=delta/1000
+	#if sender.charcont.health<=0:
+		#teleport_sound2.play()
+		#sender.charcont.set_rect(pygame.rect.Rect(sender.charcont.original_pos[0],sender.charcont.original_pos[1],sender.charcont.rect[2],sender.charcont.rect[3]))
+		#sender.charcont.health=200
+		#sender.charcont.energy=200
+		#framecount=0
+		#timecount=0
 	

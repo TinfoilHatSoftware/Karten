@@ -25,14 +25,14 @@ class TileTemplate(object):
 		self.state=start_state
 class XMLTileSet(object):
 	def __init__(self,folder_name):
-		print("[libkarten]Initializing XMLTileSet class for "+str(folder_name)+".")
+		#print("[libkarten]Initializing XMLTileSet class for "+str(folder_name)+".")
 		self.tiles=[]
 		self.path_from_here = os.path.join("..","media","images","tiles",folder_name)
-		print("[libkarten]Initializing cElementTree for reading of XML animation data.")
+		#print("[libkarten]Initializing cElementTree for reading of XML animation data.")
 		self.xml_tree = ET.parse(os.path.join(self.path_from_here,"tileset.xml"))
 		self.xml_tree_root = self.xml_tree.getroot()
 		for tile in self.xml_tree_root.findall("tile"):
-			print("[libkarten]Reading tile data from XML:"+str(tile)+".")
+		#	print("[libkarten]Reading tile data from XML:"+str(tile)+".")
 			if int(tile.get("play"))==0:
 				playanim=False
 			else:
@@ -40,7 +40,7 @@ class XMLTileSet(object):
 			self.tiles.append(TileTemplate(animations.XMLTileAnimation(folder_name,tile.get("anim")),folder_name,tile.get("index"),start_state="off",play_anim=playanim))
 		self.xml_tree=None
 		self.xml_tree_root=None
-		print(self.tiles)
+		#print(self.tiles)
 class Tile(pygame.sprite.Sprite):
 	def __init__(self,tiletemplate,layer,layer_index,pos,collision_layer_indexes,collision_layers=[]):
 		super(Tile,self).__init__()
@@ -95,7 +95,7 @@ class Karte(object):
 	def fromxml(self,map_name,sender):
 		tmptiles=[]
 		self.name=map_name
-		print("[libkarten]Loading Karte xml mapfile with name "+str(map_name)+".")
+		#print("[libkarten]Loading Karte xml mapfile with name "+str(map_name)+".")
 		path_to_mapfile=os.path.join("..","media","maps_xml",map_name+".xml")
 		try:
 			xml_tree = ET.parse(path_to_mapfile)
@@ -184,6 +184,10 @@ class Karte(object):
 				tiledefs.append(ET.SubElement(tile_defs,"tile",tileset=tile.tileset_name,index=tile.index,pos=str(tile.rect.x)+" "+str(tile.rect.y),layer=str(tile.l_index),collision_layers=tile.c_layer_indexes))
 			iswesen=None
 		return ET.tostring(root)
+	def loadWesenWithID(self,ent,pos,reqs_update,owner,sender):
+		ent=daswesen.load_wesen(ent,pos,self.layers_l,self.collisions_l,reqs_update,sender)
+		ent.owner=owner
+		self.tiles.append(ent)
 class EntTilesetMockup(object):
 	def __init__(self,ent_name):
 		ent=daswesen.load_wesen_constructor(ent_name)

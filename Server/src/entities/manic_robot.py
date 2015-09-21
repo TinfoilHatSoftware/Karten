@@ -52,8 +52,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				self.framecounter+=1
 			else:
 				self.framecounter=0
-				if round32(sender.charcont.rect.x)==round32(self.rect.x):
-					projectiles.PlasmaExplosive(self.rect.center,(0,-1),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self)
+				#if round32(sender.charcont.rect.x)==round32(self.rect.x):
+					#projectiles.PlasmaExplosive(self.rect.center,(0,-1),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self)
 			self.state='up'
 			self.set_state_and_frame(self.state,self.frame)
 			if self.health<=0:

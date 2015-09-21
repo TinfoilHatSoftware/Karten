@@ -41,14 +41,18 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.framecounter=0
 		self.energy=200
 		self.health=200
+		self.owner=0
 		self.original_pos=position
 		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
-		inputx=sender.input
-		if inputx!=[]:
-			print(inputx)
+		inputx=[]
+		try:
+			inputx=sender.input[self.owner]
+		except:
+			pass
+		
 		if self.going==True:
 			
 			if self.framecounter==50:
@@ -60,7 +64,6 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			if self.firsttime==True:
 				sender.lock_camera_to_ent(self.get_ent_rect,self.set_self_rect)
 				self.firsttime=False
-				sender.charcont=self
 				explode_sound=pygame.mixer.Sound(join('..','media','sound','explode.wav'))
 				blast_sound=pygame.mixer.Sound(join('..','media','sound','blast.wav'))
 				self.sounds=(explode_sound,blast_sound)

@@ -43,8 +43,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				self.firsttime=False
 				self.teleport_sound=pygame.mixer.Sound(join('..','media','sound','teleport.wav'))
 				self.teleport_sound2=pygame.mixer.Sound(join('..','media','sound','teleport_finish.wav'))
-			if self.opening:
-				sender.charcont.rect.center=self.charpos
+			#if self.opening:
+				#sender.charcont.rect.center=self.charpos
 			if self.framecounter<700:
 				self.framecounter+=delta
 			else:
@@ -55,16 +55,21 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					else:
 						self.frame=0
 						self.opening=False
-						self.teleport_sound2.play()
+						#self.teleport_sound2.play()
 						#sender.stop()
 						#sender.change_map('test2')
 						#sender.run()
 			self.state='right'
 			self.set_state_and_frame(self.state,self.frame)
 			for wall in sender.c_map.tiles:	
-				if self.rect.colliderect(wall.rect) and wall!=self and not self.opening and wall==sender.charcont:
+				name='derp'
+				try:
+					wall.name
+				except:
+					name=None
+				if self.rect.colliderect(wall.rect) and wall!=self and not self.opening and name!='derp':
 					self.opening=True
-					self.charpos=sender.charcont.rect.center
+					#self.charpos=sender.charcont.rect.center
 					self.teleport_sound.play()
 			
 	def go(self):

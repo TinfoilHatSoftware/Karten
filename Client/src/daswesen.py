@@ -17,13 +17,18 @@ class GrafikWesenBase(pygame.sprite.Sprite):
 		self.image=self.animation.get_frame(initial_graphic_state[0],initial_graphic_state[1])
 		self.c_layer_indexes=collision_layers_index
 		self.rect=self.image.get_rect()
-		self.add(self.layer)
+		try:
+			self.add(self.layer)
+		except:
+			pass
 		self.l_index=draw_layer_index
 		self.state=initial_graphic_state[0]
 		self.frame=initial_graphic_state[1]
 		self.c_layers=collision_layers
-		for c_layer in self.c_layers:
-			c_layer.append(self)
+		try:
+			for c_layer in self.c_layers:
+				c_layer.append(self)
+		except:	pass
 		self.rect.x=positionxy[0]
 		self.rect.y=positionxy[1]
 		self.is_wesen=True
@@ -60,7 +65,7 @@ def get_ent_directives(entname):
 		if "#DIRECTIVE" in line:
 			directives_thing.append((line.strip("\n").split()[1],line.strip("\n").split()[2]))
 	f.close()
-	print(directives_thing)
+	#print(directives_thing)
 	return directives_thing
 
 def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update_var_thing,root):

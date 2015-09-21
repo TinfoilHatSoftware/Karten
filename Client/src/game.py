@@ -16,7 +16,7 @@ class Game(object):
 	def __init__(self):
 		#self.PYGAME_KEY_CONVERSION_BASE={pygame.K_a:'a',pygame.K_w:'w',pygame.K_d='d'}
 		self.PYGAME_KEY_CONVERSION_BASE={}
-		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
+		self.flags = pygame.DOUBLEBUF | pygame.HWSURFACE
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
 		self.fp.seek(0)
 		for line in self.fp.readlines():
@@ -73,7 +73,7 @@ class Game(object):
 		print(self.n+'Done.')
 	def run(self):
 		print(self.n+'Running.')
-		self.netmgr=netwerk.ThreadedSyncManagerClient(25565,'127.0.0.1',self._netcallback)
+		self.netmgr=netwerk.ThreadedSyncManagerClient(26642,'127.0.0.1',self._netcallback)
 		self.netmgr.connect()
 		self.netmgr.run()
 		while self.map_data==None:
@@ -190,9 +190,14 @@ class Game(object):
 		if items[0]=="#":
 			pass
 		else:
-			self.id_num=int(items)
-			print(self.n+"Current ID:"+str(self.id_num))
-			return
+			if items[0]=='@':
+				x=items[1:].split(' ')
+				self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self)
+				return
+			else:	
+				self.id_num=int(items)
+				print(self.n+"Current ID:"+str(self.id_num))
+				return
 		items=items[1:]
 		items=items.split(" ")
 		i=1
@@ -224,8 +229,10 @@ class Game(object):
 			inputv+='a '
 		inputv='$'+inputv
 		return inputv.encode('utf8')
-	def add_ent_id_ref(self,ent):
+	def add_ent_id_ref(self,ent,x):
 		self.ents_by_id[self.curr_id]=ent
+		for key,value in self.ents_by_id.items():
+			print(key,value.name)
 		self.curr_id+=1
 		
 		

@@ -29,7 +29,7 @@ class Game(object):
 		self.layer3_c = []
 		self.clients=[]
 		self.map_data=None
-		self.input=[]
+		self.input={}
 		self.ents_by_id={}
 		self.curr_id=0
 		self.layer4_c = []
@@ -64,7 +64,7 @@ class Game(object):
 		print(self.n+'Done.')
 	def run(self):
 		print(self.n+'Running.')
-		self.manager=netwerk.ThreadedSyncManagerServer(25565,self,self._net_callback)
+		self.manager=netwerk.ThreadedSyncManagerServer(26642,self,self._net_callback)
 		self.manager.listen()
 		self.manager.run()
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
@@ -131,16 +131,15 @@ class Game(object):
 		self.locking=True
 		self.camera_pos=(entrectref()[0],entrectref()[1])
 	def add_ent_id_ref(self,ent):
-		print(ent.name,self.curr_id)
 		self.ents_by_id[self.curr_id]=ent
+		for key,value in self.ents_by_id.items():
+			print(key,value.name)
 		self.curr_id+=1
 	def _net_callback(self,x,y=None):
 		try:
 			x=x.decode('utf8')
 		except:
 			pass
-		if x!='$':
-			print(x)
 		#print(x,y)
 		input=[]
 		if not y in self.clients and y!=None:
@@ -148,11 +147,15 @@ class Game(object):
 		if x==0:
 			idx=self.rem_index_curr
 			self.rem_index_curr+=1
-			return str(idx).encode('utf8')
+			y.idx=idx
+			ent=self.c_map.loadWesenWithID('derp',(192,64),self.reqs_update,idx,self)
+			y.sendLine(str(idx).encode('utf8'))
+			data='@derp 192 64 %s' % idx
+			return data.encode('utf8')
 		if x[0]=='$':
 			x=x[1:]
 			x=x.split()
-			self.input=x
+			self.input[y.idx]=x
 
 		
 		
