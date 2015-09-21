@@ -56,9 +56,9 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						self.frame=0
 						self.opening=False
 						self.teleport_sound2.play()
-						sender.stop()
-						sender.change_map('test2')
-						sender.run()
+						#sender.stop()
+						#sender.change_map('test2')
+						#sender.run()
 			self.state='right'
 			self.set_state_and_frame(self.state,self.frame)
 			for wall in sender.c_map.tiles:	

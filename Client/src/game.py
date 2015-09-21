@@ -14,6 +14,8 @@ import conversionist
 import netwerk
 class Game(object):
 	def __init__(self):
+		#self.PYGAME_KEY_CONVERSION_BASE={pygame.K_a:'a',pygame.K_w:'w',pygame.K_d='d'}
+		self.PYGAME_KEY_CONVERSION_BASE={}
 		self.flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
 		self.fp.seek(0)
@@ -175,12 +177,16 @@ class Game(object):
 		self.locking=True
 		self.camera_pos=(entrectref()[0],entrectref()[1])
 	def _netcallback(self,data,sender):
+		#print(data)
 		if self.protocol!=sender:	self.protocol=sender
-		print(data)
+		#print("DATA:%s" % str(data))
 		if self.map_data==None:
 			self.map_data=data
 			return
-		items=data.decode('utf8')
+		try:
+			items=data.decode('utf8')
+		except:
+			return
 		if items[0]=="#":
 			pass
 		else:
@@ -192,19 +198,32 @@ class Game(object):
 		i=1
 		y=[]
 		z=[]
-		print(items)
+		#print(items)
 		for x in items:
 			x=int(x)
 			y.append(x)
+			#print(x)
 			if i%2==0 and i!=0 and i!=1:
-				print(y)
-				print(x)
 				z.append((y[0],y[1]))
+				y=[]
 			i+=1
 		items=z
+		#print(items)
+		##print(self.ents_by_id)
 		for idx,ent in self.ents_by_id.items():
+			#print(idx)
 			ent.rect.x=items[idx][0]
 			ent.rect.y=items[idx][1]
+		keys=pygame.key.get_pressed()
+		inputv=''
+		if keys[pygame.K_d]:
+			inputv+='d '
+		if keys[pygame.K_w]:
+			inputv+='w '
+		if keys[pygame.K_a]:
+			inputv+='a '
+		inputv='$'+inputv
+		return inputv.encode('utf8')
 	def add_ent_id_ref(self,ent):
 		self.ents_by_id[self.curr_id]=ent
 		self.curr_id+=1

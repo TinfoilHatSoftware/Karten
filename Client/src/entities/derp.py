@@ -86,23 +86,24 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			derp2=False
 			if keys[pygame.K_a]:
 				#self.yvel=0
-				self.xvel=(-self.move_speed)
+				#self.xvel=(-self.move_speed)
 				self.state='left'
 				self.moving=True
 			elif keys[pygame.K_d]:
-				self.xvel=self.move_speed
+			#	self.xvel=self.move_speed
 				#self.yvel=0
 				self.state='right'
 				self.moving=True
 			else:
 				derp=True
 			if keys[pygame.K_w]:
-				if self.is_grounded:
-					self.yvel-=self.jump_speed
-					self.is_grounded=False
+				pass
+				#if self.is_grounded:
+					#self.yvel-=self.jump_speed
+					#self.is_grounded=False
 			else:
 				derp2=True
-			self.is_grounded=False
+			#self.is_grounded=False
 			#elif keys[pygame.K_s]:
 			#	self.rect.y+=delta/4
 			#	self.yvel=1
@@ -110,11 +111,11 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#	self.state='down'
 			#	self.moving=True
 			if derp and derp2:
-				self.xvel=0
+				#self.xvel=0
 				self.moving=False
 				#self.yvel=0
 				self.set_state_and_frame(self.state,self.frame)
-			
+	
 			if self.counter>=100 and self.moving:
 				self.counter=0
 				if self.frame==len(self.animation.states[self.state])-1:
@@ -123,18 +124,18 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				else:
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
-			self.bottomed=False
-			self.rect.x+=self.xvel*(delta/100)
-			self.collide(self.xvel,0)
+			#self.bottomed=False
+			#self.rect.x+=self.xvel*(delta/100)
+			#self.collide(self.xvel,0)
 			#self.collided=False
 					#print(self.collided)
 			#if self.collided==False:
 			#	pass
-			self.rect.top += self.yvel*(delta/100)
-			if not self.is_grounded:
-				self.yvel+=50*(delta/100)
-				self.collide(0,self.yvel)
-				if self.yvel>self.max_gravity:	self.yvel=self.max_gravity
+		#	self.rect.top += self.yvel*(delta/100)
+			#if not self.is_grounded:
+			#	self.yvel+=50*(delta/100)
+			#	self.collide(0,self.yvel)
+			#	if self.yvel>self.max_gravity:	self.yvel=self.max_gravity
 			
 
 					#self.grounded=False
@@ -145,7 +146,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					#else:
 					#	self.yvel=1
 			#for x in self.c_layers[0]:
-				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
+				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)"""
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):

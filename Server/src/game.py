@@ -29,7 +29,7 @@ class Game(object):
 		self.layer3_c = []
 		self.clients=[]
 		self.map_data=None
-		self.input=''
+		self.input=[]
 		self.ents_by_id={}
 		self.curr_id=0
 		self.layer4_c = []
@@ -131,16 +131,28 @@ class Game(object):
 		self.locking=True
 		self.camera_pos=(entrectref()[0],entrectref()[1])
 	def add_ent_id_ref(self,ent):
+		print(ent.name,self.curr_id)
 		self.ents_by_id[self.curr_id]=ent
 		self.curr_id+=1
 	def _net_callback(self,x,y=None):
+		try:
+			x=x.decode('utf8')
+		except:
+			pass
+		if x!='$':
+			print(x)
 		#print(x,y)
+		input=[]
 		if not y in self.clients and y!=None:
 			self.clients.append(y)
 		if x==0:
 			idx=self.rem_index_curr
 			self.rem_index_curr+=1
 			return str(idx).encode('utf8')
+		if x[0]=='$':
+			x=x[1:]
+			x=x.split()
+			self.input=x
 
 		
 		

@@ -32,7 +32,8 @@ class GameClientProtocol(LineReceiver):
 		print(n+'Connection  protocol fully initialized.')
 	def	lineReceived(self, line):
 		#print(str(line)+"HELLO")
-		self.callback(line,self)
+		returned=self.callback(line,self)
+		if returned!=None:	self.sendLine(returned)
 class GameClientFactory(ClientFactory):
     def __init__(self,callback):
         self.callback=callback

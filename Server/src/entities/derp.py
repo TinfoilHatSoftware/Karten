@@ -46,6 +46,9 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
+		inputx=sender.input
+		if inputx!=[]:
+			print(inputx)
 		if self.going==True:
 			
 			if self.framecounter==50:
@@ -84,19 +87,19 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			keys=pygame.key.get_pressed()
 			derp=False
 			derp2=False
-			if keys[pygame.K_a]:
+			if 'a' in inputx:
 				#self.yvel=0
 				self.xvel=(-self.move_speed)
 				self.state='left'
 				self.moving=True
-			elif keys[pygame.K_d]:
+			elif 'd' in inputx:
 				self.xvel=self.move_speed
 				#self.yvel=0
 				self.state='right'
 				self.moving=True
 			else:
 				derp=True
-			if keys[pygame.K_w]:
+			if 'w' in inputx:
 				if self.is_grounded:
 					self.yvel-=self.jump_speed
 					self.is_grounded=False

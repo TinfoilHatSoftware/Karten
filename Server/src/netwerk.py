@@ -67,10 +67,9 @@ class GameServerProtocol(LineReceiver):
 			del self.users[self.username]
 			print(n+'Connection lost from '+str(self.addr))
 	def lineReceived(self, line):
-		if self.state=='INIT':
-			self.handle_INIT(line)
+		self.callback(line)
 	def transmit(self,line):
-		print(line)
+		#print(line)
 		self.sendLine(line)
 
 
