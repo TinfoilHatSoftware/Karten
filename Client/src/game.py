@@ -209,8 +209,8 @@ class Game(object):
 			x=int(x)
 			y.append(x)
 			#print(x)
-			if i%2==0 and i!=0 and i!=1:
-				z.append((y[0],y[1]))
+			if i%3==0 and i!=0:
+				z.append((y[0],y[1],y[2]))
 				y=[]
 			i+=1
 		items=z

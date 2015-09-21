@@ -97,7 +97,7 @@ class Game(object):
 			self.game_code.update(delta,self.c_map,self)
 			bleh=[0] * len(self.ents_by_id.keys())
 			for key,value in self.ents_by_id.items():
-				bleh[key]=str(value.rect.x)+" "+str(value.rect.y)
+				bleh[key]=str(value.rect.x)+" "+str(value.rect.y)+" "+str(value.data)
 			data=' '.join(str(e) for e in bleh)
 			data=('#'+data).encode('utf8')
 			for x in self.clients:
@@ -151,7 +151,7 @@ class Game(object):
 			self.rem_index_curr+=1
 			y.idx=idx
 			id2=self.curr_id
-			ent=self.c_map.loadWesenWithID('derp',(192,150),self.reqs_update,idx,self)
+			ent=self.c_map.loadWesenWithID('derp',(192,170),self.reqs_update,idx,self)
 			y.sendLine(str(idx).encode('utf8'))
 			data='@derp 192 64 %s %s' % (idx,id2)
 			return data.encode('utf8')
