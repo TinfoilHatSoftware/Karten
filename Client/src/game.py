@@ -193,6 +193,7 @@ class Game(object):
 		else:
 			if items[0]=='@':
 				x=items[1:].split(' ')
+				print(x)
 				self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self,int(x[4]))
 				return
 			else:	

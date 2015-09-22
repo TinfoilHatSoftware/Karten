@@ -8,4 +8,4 @@
 import sys
 from cx_Freeze import setup, Executable
 base = None
-setup(  name = "epischekarten",version = "0.1",description = "Karten map editor",executables = [Executable("epischekarten.py", base=base)])
+setup(  name = "game",version = "0.1",description = "Game executable",executables = [Executable("launcher.py", base=base)])

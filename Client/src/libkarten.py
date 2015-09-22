@@ -185,6 +185,7 @@ class Karte(object):
 			iswesen=None
 		return ET.tostring(root)
 	def loadWesenWithID(self,ent,pos,reqs_update,owner,sender,ent_id=None):
+		print('InWesenID: %s' % str(owner))
 		if ent_id!=None:
 			ent=daswesen.load_wesen(ent,pos,self.layers_l,self.collisions_l,reqs_update,sender,ent_id)
 			ent.owner=owner

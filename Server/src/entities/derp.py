@@ -47,6 +47,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
+		self.data=''
 		inputx=[]
 		try:
 			inputx=sender.input[self.owner]
@@ -73,20 +74,32 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE and self.energy>=50:
 						if self.state=='left':
+							self.data+='0'
 							y=0
 							x=-1
 						if self.state=='right':
+							self.data+='1'
 							y=0
 							x=1
 						if self.state=='up':
+							self.data+='2'
 							y=-1
 							x=0
 						if self.state=='down':
+							self.data+='3'
 							y=1
 							x=0
 						self.energy-=50
 						self.projectiles.append(projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self))
 			keys=pygame.key.get_pressed()
+			if self.state=='left':
+				self.data+='0'
+			if self.state=='right':
+				self.data+='1'
+			if self.state=='up':
+				self.data+='2'
+			if self.state=='down':
+				self.data+='3'
 			derp=False
 			derp2=False
 			if 'a' in inputx:
@@ -129,7 +142,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
 			self.bottomed=False
-			print(self.xvel)
+			#print(self.xvel)
 			self.rect.x+=self.xvel*(delta/100)
 			self.collide(self.xvel,0)
 			#self.collided=False
@@ -153,6 +166,10 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#for x in self.c_layers[0]:
 				#pygame.draw.rect(sender.screen,(222,222,222),(x.rect.x+700,x.rect.y,x.rect.x+(x.rect.width+700),x.rect.y+(x.rect.height)),2)
 		#print(self.rect.x,self.rect.y)
+			if self.moving==True:
+				self.data+='0'
+			else:
+				self.data+='1'
 	def go(self):
 		self.going=True
 	def get_ent_rect(self):

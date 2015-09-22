@@ -36,6 +36,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.frame=0
 		self.is_grounded=False
 		self.going=False
+		self.moving=False
 		self.is_wesen=True
 		self.firsttime=True
 		self.framecounter=0
@@ -47,7 +48,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
 		if self.going==True:
-			
+			#print(self.data)
 			if self.framecounter==50:
 				self.framecounter=0
 				if self.energy<200:
@@ -84,25 +85,19 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			keys=pygame.key.get_pressed()
 			derp=False
 			derp2=False
-			if keys[pygame.K_a]:
-				#self.yvel=0
-				#self.xvel=(-self.move_speed)
-				self.state='left'
-				self.moving=True
-			elif keys[pygame.K_d]:
-			#	self.xvel=self.move_speed
-				#self.yvel=0
-				self.state='right'
-				self.moving=True
-			else:
-				derp=True
-			if keys[pygame.K_w]:
-				pass
-				#if self.is_grounded:
-					#self.yvel-=self.jump_speed
-					#self.is_grounded=False
-			else:
-				derp2=True
+			if self.owner==sender.id_num:
+				if keys[pygame.K_a]:
+					#self.yvel=0
+					#self.xvel=(-self.move_speed)
+					self.state='left'
+					self.moving=True
+				elif keys[pygame.K_d]:
+					#self.xvel=self.move_speed
+					#self.yvel=0
+					self.state='right'
+					self.moving=True
+				else:
+					derp=True
 			#self.is_grounded=False
 			#elif keys[pygame.K_s]:
 			#	self.rect.y+=delta/4
@@ -110,7 +105,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#	self.xvel=0
 			#	self.state='down'
 			#	self.moving=True
-			if derp and derp2:
+			if derp:
 				#self.xvel=0
 				self.moving=False
 				#self.yvel=0
