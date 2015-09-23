@@ -89,7 +89,7 @@ def load_wesen(wesen_name,position,layers_list,collision_layers_list,reqs_update
 			reqs_update_var=True
 	module = imp.load_source(wesen_name, os.path.join("entities",wesen_name+".py"))
 	ent=module.WesenEnt(*loaderargs)
-	ent.data=0
+	ent.data='000'
 	if reqs_update_var:
 		reqs_update_var_thing.append(ent)
 	if ent_id!=None:

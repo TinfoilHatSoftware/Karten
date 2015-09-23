@@ -32,13 +32,13 @@ def update(delta,c_map,sender):
 	global framecount
 	global timecount
 	global firsttime
-	if firsttime:
-		for ent in sender.reqs_update:
-			try:
-				if ent.owner==sender.idx:
-					sender.charcont=ent
-			except Exception as a:
-				pass
+	#if firsttime:
+	#	for ent in sender.reqs_update:
+	#		try:
+	#			if ent.owner==sender.idx:
+	#				sender.charcont=ent
+	#		except Exception as a:
+	#			pass
 				#print(a)
 	#framecount+=1
 	#timecount+=delta/1000

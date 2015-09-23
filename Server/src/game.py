@@ -98,6 +98,8 @@ class Game(object):
 			bleh=[0] * len(self.ents_by_id.keys())
 			for key,value in self.ents_by_id.items():
 				bleh[key]=str(value.rect.x)+" "+str(value.rect.y)+" "+str(value.data)
+				#print(value.data)
+				value.data='000'
 			data=' '.join(str(e) for e in bleh)
 			data=('#'+data).encode('utf8')
 			for x in self.clients:
@@ -113,7 +115,6 @@ class Game(object):
 		self.layer1_c = []
 		self.layer2_c = []
 		self.layer3_c = []
-		self.layer4_c = []
 		self.layer5_c = []
 		self.reqs_update=[]
 		try:
@@ -153,8 +154,9 @@ class Game(object):
 			id2=self.curr_id
 			ent=self.c_map.loadWesenWithID('derp',(192,170),self.reqs_update,idx,self)
 			y.sendLine(str(idx).encode('utf8'))
-			data='@derp 192 64 %s %s' % (idx,id2)
-			return data.encode('utf8')
+			data=('@derp 192 64 %s %s' % (idx,id2)).encode('utf8')
+			for each in self.clients:
+				each.sendLine(data)
 		if x[0]=='$':
 			x=x[1:]
 			x=x.split()

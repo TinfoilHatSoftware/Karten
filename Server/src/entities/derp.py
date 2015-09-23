@@ -42,12 +42,13 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.energy=200
 		self.health=200
 		self.owner=0
+		self.data='0'
 		self.original_pos=position
 		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
-		self.data=''
+		#print(self.data)
 		inputx=[]
 		try:
 			inputx=sender.input[self.owner]
@@ -92,6 +93,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						self.energy-=50
 						self.projectiles.append(projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self))
 			keys=pygame.key.get_pressed()
+			#print(self.data)
 			if self.state=='left':
 				self.data+='0'
 			if self.state=='right':
@@ -191,8 +193,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					self.rect.left=sprite.rect.right
 					#self.xvel=0
 					#self.collided=True
-				
 				if yvel<0:
-					self.rect.top=self.rect.bottom
+					self.rect.top=sprite.rect.bottom
+					self.yvel=0
 
 		

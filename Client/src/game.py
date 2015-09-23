@@ -23,7 +23,9 @@ class Game(object):
 			if line.split()[0]=='resolution':
 				self.xres,self.yres=line.split('resolution', 1)[1].strip('\n').split()
 		self.fp.seek(0)
-		self.screen=pygame.display.set_mode((int(self.xres),int(self.yres)),self.flags)
+		self.yres=600
+		self.xres=800
+		self.screen=pygame.display.set_mode((int(800),int(600)),self.flags)
 		self.layer1 = pygame.sprite.Group()
 		self.layer2 = pygame.sprite.Group()
 		self.layer3 = pygame.sprite.Group()
@@ -207,12 +209,13 @@ class Game(object):
 		z=[]
 		#print(items)
 		for x in items:
-			x=int(x)
-			y.append(x)
 			#print(x)
 			if i%3==0 and i!=0:
+				y.append(x[2:])
 				z.append((y[0],y[1],y[2]))
 				y=[]
+			else:
+				y.append(int(x))
 			i+=1
 		items=z
 		#print(items)
@@ -221,6 +224,7 @@ class Game(object):
 			#print(idx)
 			ent.rect.x=items[idx][0]
 			ent.rect.y=items[idx][1]
+			ent.data=items[idx][2]
 		keys=pygame.key.get_pressed()
 		inputv=''
 		if keys[pygame.K_d]:

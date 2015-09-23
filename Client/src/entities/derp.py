@@ -41,13 +41,20 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.firsttime=True
 		self.framecounter=0
 		self.energy=200
+		self.firsttime=True
 		self.health=200
 		self.original_pos=position
 		self.projectile_anims=(animations.XMLAnimation('blue_explosion'),animations.XMLAnimation('plasma_explosive_projectile'))
 		self.missiles=[]
 		super(WesenEnt,self).__init__(animation,position,collision_layers[1],collision_layers[0],layer[1],layer[0],('right',0))
 	def update(self,delta,sender):
+		#print(self.data)
 		if self.going==True:
+			if self.firsttime:
+				if self.owner==sender.id_num:
+					sender.charcont=self
+					sender.lock_camera_to_ent(self.get_ent_rect,self.get_ent_rect)
+				self.firsttime=False
 			#print(self.data)
 			if self.framecounter==50:
 				self.framecounter=0
@@ -85,6 +92,15 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			keys=pygame.key.get_pressed()
 			derp=False
 			derp2=False
+			if self.owner!=sender.id_num:
+				if self.data[2]=='0':
+					self.moving=True
+				else:
+					self.moving=False
+				if self.data[1]=='0':
+					self.state='left'
+				else:
+					self.state='right'
 			if self.owner==sender.id_num:
 				if keys[pygame.K_a]:
 					#self.yvel=0
