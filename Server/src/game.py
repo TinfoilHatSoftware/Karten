@@ -157,6 +157,7 @@ class Game(object):
 			data=('@derp 192 64 %s %s' % (idx,id2)).encode('utf8')
 			for each in self.clients:
 				each.sendLine(data)
+			return
 		if x[0]=='$':
 			x=x[1:]
 			x=x.split()
