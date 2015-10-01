@@ -24,6 +24,7 @@ global timecount
 timecount=0
 global firsttime
 firsttime=True
+import time
 
 def update(delta,c_map,sender):
 	global mono_font
@@ -32,6 +33,8 @@ def update(delta,c_map,sender):
 	global framecount
 	global timecount
 	global firsttime
+	#time.sleep(1000)
+	pygame.draw.line(sender.screen,(255,0,0),(sender.charcont.rect.x+sender.charcont.rect.width/2+sender.camera_pos[0],sender.charcont.rect.y+sender.charcont.rect.height/2+sender.camera_pos[1]),pygame.mouse.get_pos(),4)
 	#if firsttime:
 	#	for ent in sender.reqs_update:
 	#		try:

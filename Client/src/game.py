@@ -102,6 +102,12 @@ class Game(object):
 		print(self.n+'Running.')
 		while self.running:
 			delta=self.clock.tick(500)
+			mse = pygame.mouse.get_pos()
+			mpos_l=[0,0]
+			mpos_l[0],mpos_l[1]=mse
+			mpos_l[0]-=self.camera_pos[0]
+			mpos_l[1]-=self.camera_pos[1]
+			self.mouse_pos=(mpos_l[0],mpos_l[1])
 			self.screen.fill((0,0,0))
 			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
