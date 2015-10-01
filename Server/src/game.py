@@ -160,7 +160,6 @@ class Game(object):
 			return
 		if x[0]=='$':
 			x=x[1:]
-			x=x.split()
 			self.input[y.idx]=x
 			#print(self.input)
 

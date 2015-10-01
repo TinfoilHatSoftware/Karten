@@ -239,6 +239,7 @@ class Game(object):
 			inputv+='w '
 		if keys[pygame.K_a]:
 			inputv+='a '
+		inputv+=' *%s %s ' % (str(pygame.mouse.get_pos()[0]),str(pygame.mouse.get_pos()[1]))
 		inputv='$'+inputv
 		return inputv.encode('utf8')
 	def add_ent_id_ref(self,ent,ent_id=None):

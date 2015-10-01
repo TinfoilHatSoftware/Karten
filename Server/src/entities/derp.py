@@ -50,8 +50,13 @@ class WesenEnt(daswesen.GrafikWesenBase):
 	def update(self,delta,sender):
 		#print(self.data)
 		inputx=[]
+		inputy=''
 		try:
-			inputx=sender.input[self.owner]
+			inputx=sender.input[self.owner].split()
+		except:
+			pass
+		try:
+			inputy=sender.input[self.owner]
 		except:
 			pass
 		#print(inputx)
@@ -94,6 +99,14 @@ class WesenEnt(daswesen.GrafikWesenBase):
 						self.projectiles.append(projectiles.PlasmaExplosive(self.rect.center,(x,y),sender.layer2,self.c_layers[0],sender.reqs_update,self.projectile_anims,self.sounds,self))
 			keys=pygame.key.get_pressed()
 			#print(self.data)
+			try:
+				m=inputy.split('*',1)[1]
+				if int(m.split(' ')[0])>self.rect.x:
+					self.state='right'
+				else:
+					self.state='left'
+			except:
+				pass
 			if self.state=='left':
 				self.data+='0'
 			if self.state=='right':
@@ -103,16 +116,17 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			if self.state=='down':
 				self.data+='3'
 			derp=False
+			
 			derp2=False
 			if 'a' in inputx:
 				#self.yvel=0
 				self.xvel=(-self.move_speed)
-				self.state='left'
+				#self.state='left'
 				self.moving=True
 			elif 'd' in inputx:
 				self.xvel=self.move_speed
 				#self.yvel=0
-				self.state='right'
+				#self.state='right'
 				self.moving=True
 			else:
 				derp=True
