@@ -93,15 +93,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			keys=pygame.key.get_pressed()
 			derp=False
 			derp2=False
-			if self.owner!=sender.id_num:
-				if self.data[2]=='0':
-					self.moving=True
-				else:
-					self.moving=False
-				if self.data[1]=='0':
-					self.state='left'
-				else:
-					self.state='right'
+			#print(self.data)
+				
 			if self.owner==sender.id_num:
 				if keys[pygame.K_a]:
 					#self.yvel=0
@@ -124,13 +117,22 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#	self.moving=True
 			#print(sender.mouse_pos,self.rect)
 			#print(int(sender.mouse_pos[0]),self.rect.x,self.state,sender.mouse_pos[0]>self.rect.x)
+			print(self.owner,sender.id_num)
 			if self.owner==sender.id_num:
-				if int(sender.mouse_pos[0])>self.rect.x:
+				if int(sender.mouse_pos[0])>(self.rect.x+self.rect.width/2):
 					self.state='right'
 				else:
 					self.state='left'
 			else:
-				pass
+				if self.data[2]=='0':
+					self.moving=True
+				else:
+					self.moving=False
+				if self.data[1]=='0':
+					self.state='left'
+				else:
+					self.state='right'
+				self.set_state_and_frame(self.state,self.frame)
 			if derp:
 				#self.xvel=0
 				self.moving=False

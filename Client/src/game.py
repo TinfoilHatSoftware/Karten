@@ -239,7 +239,10 @@ class Game(object):
 			inputv+='w '
 		if keys[pygame.K_a]:
 			inputv+='a '
-		inputv+=' *%s %s ' % (str(pygame.mouse.get_pos()[0]),str(pygame.mouse.get_pos()[1]))
+		try:
+			inputv+=' *%s %s ' % (str(round(self.mouse_pos[0])),str(round(self.mouse_pos[1])))
+		except BaseException as e:
+			print(e)
 		inputv='$'+inputv
 		return inputv.encode('utf8')
 	def add_ent_id_ref(self,ent,ent_id=None):

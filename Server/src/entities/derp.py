@@ -101,12 +101,13 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#print(self.data)
 			try:
 				m=inputy.split('*',1)[1]
-				if int(m.split(' ')[0])>self.rect.x:
+				if int(m.split(' ')[0])>(self.rect.x+self.rect.width/2):
 					self.state='right'
 				else:
 					self.state='left'
-			except:
-				pass
+				#print(self,self.state)
+			except BaseException as e:
+				print(e)
 			if self.state=='left':
 				self.data+='0'
 			if self.state=='right':
