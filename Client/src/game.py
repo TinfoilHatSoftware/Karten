@@ -8,7 +8,7 @@
 from os.path import join as jpath
 import pygame
 import timeit
-import libkarten
+import libkarten, random
 import imp
 import conversionist
 import netwerk
@@ -36,6 +36,9 @@ class Game(object):
 		self.layer3_c = []
 		self.protocol=None
 		self.ents_by_id={}
+		self.shaking=False
+		self.shakes=0
+		self.shakesize=0
 		self.curr_id=0
 		self.map_data=None
 		self.layer4_c = []
@@ -118,8 +121,17 @@ class Game(object):
 			if keys[pygame.K_ESCAPE]:
 				self.running=False
 			oldrects={}
+			shook=False
 			if self.locking==True:
 				self.camera_pos=(-self.entrectref().center[0]+self.xres/2,-self.entrectref().center[1]+self.yres/2)
+			if self.shaking and self.shakes>0:
+				valy=int(random.uniform(-1.0,1.0)*self.shakesize)
+				valx=int(random.uniform(-1.0,1.0)*self.shakesize)
+				self.camera_pos=(self.camera_pos[0]+valx,self.camera_pos[1]+valy)
+				shook=True
+				self.shakes-=1
+			if self.shakes==0:
+				self.shaking=False
 			for r in list(self.layer1):
 				oldrects[r]=(r.rect.x,r.rect.y)
 				r.rect.x+=self.camera_pos[0]
@@ -155,6 +167,8 @@ class Game(object):
 				r.rect.x,r.rect.y=oldrects[r]
 			for r in list(self.layer5):
 				r.rect.x,r.rect.y=oldrects[r]
+			if shook==True:
+				self.camera_pos=(self.camera_pos[0]-valx,self.camera_pos[1]-valy)
 			self.game_code.update(delta,self.c_map,self)
 			pygame.display.update()
 		print(self.n+"Runloop stopped.")
@@ -255,7 +269,10 @@ class Game(object):
 		for key,value in self.ents_by_id.items():
 			print(key,value.name)
 		self.curr_id+=1
-		
+	def cameraShake(self,numshakes,shakesize):
+		self.shakes=numshakes
+		self.shakesize=shakesize
+		self.shaking=True
 		
 		
 		

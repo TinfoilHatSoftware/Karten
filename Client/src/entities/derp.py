@@ -94,7 +94,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			derp=False
 			derp2=False
 			#print(self.data)
-				
+			if keys[pygame.K_e]:
+				sender.cameraShake(5,20)
 			if self.owner==sender.id_num:
 				if keys[pygame.K_a]:
 					#self.yvel=0
@@ -117,7 +118,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			#	self.moving=True
 			#print(sender.mouse_pos,self.rect)
 			#print(int(sender.mouse_pos[0]),self.rect.x,self.state,sender.mouse_pos[0]>self.rect.x)
-			print(self.owner,sender.id_num)
+			#print(self.owner,sender.id_num)
 			if self.owner==sender.id_num:
 				if int(sender.mouse_pos[0])>(self.rect.x+self.rect.width/2):
 					self.state='right'
