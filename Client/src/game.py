@@ -101,10 +101,10 @@ class Game(object):
 			except NameError as e:
 				print(self.n+'Warning:Ent '+str(ent)+' does not have method go, ignoring.')
 		self.running=True
-		self.clock.tick(500)
+		self.clock.tick(60)
 		print(self.n+'Running.')
 		while self.running:
-			delta=self.clock.tick(500)
+			delta=self.clock.tick(60)
 			mse = pygame.mouse.get_pos()
 			mpos_l=[0,0]
 			mpos_l[0],mpos_l[1]=mse

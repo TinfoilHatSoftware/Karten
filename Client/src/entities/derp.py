@@ -95,7 +95,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			derp2=False
 			#print(self.data)
 			if keys[pygame.K_e]:
-				sender.cameraShake(5,20)
+				sender.cameraShake(3,10)
 			if self.owner==sender.id_num:
 				if keys[pygame.K_a]:
 					#self.yvel=0
