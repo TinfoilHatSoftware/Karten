@@ -34,7 +34,12 @@ def update(delta,c_map,sender):
 	global timecount
 	global firsttime
 	#time.sleep(1000)
-	pygame.draw.line(sender.screen,(255,0,0),(sender.charcont.rect.x+sender.charcont.rect.width/2+sender.camera_pos[0],sender.charcont.rect.y+sender.charcont.rect.height/2+sender.camera_pos[1]),pygame.mouse.get_pos(),4)
+	x1=sender.charcont.rect.x+sender.charcont.rect.width/2+sender.camera_pos[0]
+	y1=sender.charcont.rect.y+sender.charcont.rect.height/2+sender.camera_pos[1]
+	mouse=pygame.mouse.get_pos()
+	x2=mouse[0]
+	y2=mouse[1]
+	pygame.draw.line(sender.screen,(255,0,0),(x1,y1),(x2,y2),4)
 	#if firsttime:
 	#	for ent in sender.reqs_update:
 	#		try:
@@ -48,8 +53,8 @@ def update(delta,c_map,sender):
 	#sender.screen.blit(energy_label,(80,30))
 	#pygame.draw.rect(sender.screen,(0,255,0),(11,11,sender.charcont.energy,13))
 	#pygame.draw.rect(sender.screen,(128,128,128),(10,10,201,15),2)
-	#img=mono_font3.render('FPS: '+str(round(sender.clock.get_fps())),False,(255,255,255))
-	#sender.screen.blit(img,(30,int(sender.yres-30)))
+	img=mono_font3.render('FPS: '+str(round(sender.clock.get_fps())),False,(255,255,255))
+	sender.screen.blit(img,(30,int(sender.yres-30)))
 	#sender.screen.blit(health_label,(int(sender.xres)-140,30))
 	#pygame.draw.rect(sender.screen,(0,255,0),(int(sender.xres)-211,11,sender.charcont.health,13))
 	#pygame.draw.rect(sender.screen,(128,128,128),(int(sender.xres)-211,10,201,15),2)

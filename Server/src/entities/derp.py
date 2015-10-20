@@ -32,7 +32,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.yvel=0
 		self.move_speed=50
 		self.max_gravity=100
-		self.jump_speed=100
+		self.jump_speed=150
 		self.frame=0
 		self.is_grounded=False
 		self.going=False
@@ -61,6 +61,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 			pass
 		#print(inputx)
 		if self.going==True:
+			#print(self.is_grounded)
 			if self.framecounter==50:
 				self.framecounter=0
 				if self.energy<200:
@@ -106,8 +107,8 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				else:
 					self.state='left'
 				#print(self,self.state)
-			except BaseException as e:
-				print(e)
+			except BaseException as e:	pass
+				#print(e)
 			if self.state=='left':
 				self.data+='0'
 			if self.state=='right':
@@ -137,7 +138,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					self.is_grounded=False
 			else:
 				derp2=True
-			self.is_grounded=False
+			
 			#elif keys[pygame.K_s]:
 			#	self.rect.y+=delta/4
 			#	self.yvel=1
@@ -158,7 +159,6 @@ class WesenEnt(daswesen.GrafikWesenBase):
 				else:
 					self.frame+=1
 					self.set_state_and_frame(self.state,self.frame)
-			self.bottomed=False
 			#print(self.xvel)
 			self.rect.x+=self.xvel*(delta/100)
 			self.collide(self.xvel,0)
@@ -166,6 +166,7 @@ class WesenEnt(daswesen.GrafikWesenBase):
 					#print(self.collided)
 			#if self.collided==False:
 			#	pass
+			self.is_grounded=False
 			self.rect.top += self.yvel*(delta/100)
 			if not self.is_grounded:
 				self.yvel+=50*(delta/100)
@@ -194,12 +195,14 @@ class WesenEnt(daswesen.GrafikWesenBase):
 	def set_self_rect(self,rect):
 		self.rect=rect
 	def collide(self,xvel,yvel):
+		#print(self.c_layers[0])
 		for sprite in pygame.sprite.spritecollide(self,self.c_layers[0],False):
 			if sprite!=self and sprite not in self.projectiles:
+				#print(sprite)
 				if yvel>0:
 					self.rect.bottom=sprite.rect.top
-					self.is_grounded=True
 					self.yvel=0
+					self.is_grounded=True
 				elif xvel>0: # Moving right; Hit the left side of the wall
 					self.rect.right = sprite.rect.left
 					#self.xvel=0

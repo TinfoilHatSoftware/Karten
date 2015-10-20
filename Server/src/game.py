@@ -6,13 +6,10 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 from os.path import join as jpath
-import pygame
-import sys
-import select
-import libkarten
-import imp
-import netwerk
 from pygame.locals import *
+import pygame
+import sys, select, math, imp
+import libkarten, libmapgen, conversionist, netwerk
 class Game(object):
 	def __init__(self):
 		self.fp=open(jpath("..","game",'game.tgf'),mode='r')
@@ -68,7 +65,10 @@ class Game(object):
 		self.manager.listen()
 		self.manager.run()
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
-		self.c_map.fromxml(self.initial_map,self)
+		#self.c_map.fromxml(self.initial_map,self)
+		mapmgr=libmapgen.MapGenerator({'base':0},'derek_terrain',self.c_map)
+		mapmgr.add_to_map()
+		#print(self.c_map.make_xml())
 		for tile in self.c_map.tiles:
 			is_wesen=True
 			try:
@@ -83,6 +83,7 @@ class Game(object):
 		self.running=True
 		self.clock.tick(500)
 		while self.running:
+			#print(self.c_map.collisions_l)
 			delta=self.clock.tick(500)
 			#print(round(self.clock.get_fps()))
 			pygame.event.pump()
@@ -152,7 +153,16 @@ class Game(object):
 			self.rem_index_curr+=1
 			y.idx=idx
 			id2=self.curr_id
-			ent=self.c_map.loadWesenWithID('derp',(192,170),self.reqs_update,idx,self)
+			ent=self.c_map.loadWesenWithID('derp',(20,-190),self.reqs_update,idx,self)
+			for x in range(int(math.ceil(self.c_map.maxx/100))):
+				for m in range(int(math.ceil(self.c_map.maxy/100))):
+					u=x-1
+					v=m-1
+					if u<0:
+						u=0
+					if v<0:
+						v=0
+					y.sendLine(conversionist.convertMap(self.c_map,pygame.rect.Rect(u*100,v*100,x*100,m*100)))
 			y.sendLine(str(idx).encode('utf8'))
 			data=('@derp 192 64 %s %s' % (idx,id2)).encode('utf8')
 			for each in self.clients:

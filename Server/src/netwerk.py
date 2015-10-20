@@ -60,7 +60,6 @@ class GameServerProtocol(LineReceiver):
 		print(line)
 	def connectionMade(self):
 		print(self.n+"Connection made from client at "+str(self.addr))
-		self.sendLine(conversionist.convertMap(self.objectx))
 		self.callback(0,self)
 	def connectionLost(self, reason):
 		if self.username in self.users:

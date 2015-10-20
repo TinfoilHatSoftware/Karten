@@ -25,23 +25,25 @@ class TileTemplate(object):
 		self.state = start_state
 
 class XMLTileSet(object):
-	def __init__(self, folder_name):
+	def __init__(self,folder_name):
 		#print("[libkarten]Initializing XMLTileSet class for "+str(folder_name)+".")
-		self.path_from_here = os.path.join("..", "media", "images", "tiles", folder_name)
+		self.tiles=[]
+		self.path_from_here = os.path.join("..","media","images","tiles",folder_name)
 		#print("[libkarten]Initializing cElementTree for reading of XML animation data.")
-		self.xml_tree = ET.parse(os.path.join(self.path_from_here, "tileset.xml"))
+		self.xml_tree = ET.parse(os.path.join(self.path_from_here,"tileset.xml"))
 		self.xml_tree_root = self.xml_tree.getroot()
+		for tile in self.xml_tree_root.findall("tile"):
 		#	print("[libkarten]Reading tile data from XML:"+str(tile)+".")
-		self.tiles = [TileTemplate(animations.XMLTileAnimation(folder_name, tile.get("anim")),
-								   folder_name, tile.get("index"),
-								   start_state="off", play_anim=int(tile.get("play"))))
-								   for tile in self.xml_tree_root.findall("tile")]
-		self.xml_tree = None
-		self.xml_tree_root = None
+			if int(tile.get("play"))==0:
+				playanim=False
+			else:
+				playanim=True
+			self.tiles.append(TileTemplate(animations.XMLTileAnimation(folder_name,tile.get("anim")),folder_name,tile.get("index"),start_state="off",play_anim=playanim))
+		self.xml_tree=None
+		self.xml_tree_root=None
 		#print(self.tiles)
-
 class Tile(pygame.sprite.Sprite):
-	def __init__(self, tiletemplate, layer, layer_index, pos, collision_layer_indexes, collision_layers=[]):
+	def __init__(self, tiletemplate, layer, layer_index, pos, collision_layer_indexes, collision_layers=[],origin=None):
 		super(Tile, self).__init__()
 		self.add(layer)
 		self.c_layer_indexes = collision_layer_indexes
@@ -61,6 +63,7 @@ class Tile(pygame.sprite.Sprite):
 		self.playing = False
 		self.rect.x = pos[0]
 		self.rect.y = pos[1]
+		#print(self.c_layers)
 	def update_tile(self, delta):
 		self.image = self.animation.get_frame(self.state, self.frame)
 		self.rect = self.image.get_rect
@@ -127,6 +130,9 @@ class Karte(object):
 		self.tiles.remove(tileref)
 	def add_tile(self, tile_template, layer, layer_index, pos, col_indexes, collision_layers=[]):
 		tile_addition = Tile(tile_template, layer, layer_index, pos, col_indexes, collision_layers)
+		for c in col_indexes.split():
+			self.collisions_l[int(c)].append(tile_addition)
+		#print(self.collisions_l)
 		self.tiles.append(tile_addition)
 	def get_tile_template(self, tileset_name, index):
 		return self.tilesets[tileset_name].tiles[index]
@@ -159,6 +165,14 @@ class Karte(object):
 		return self.tiles
 	def get_tilesets_dict(self):
 		return self.tilesets
+	def remove_rect(self,rect):
+		count=0
+		for tile in self.tiles:
+			if tile.rect.colliderect(rect):
+				count+=1
+				tile.tile_kill()
+				self.tiles.remove(tile)
+		#print('COUNT IS HEREEEEEEEEEEe:',count)
 	def make_xml(self):
 		tsetdefs = []
 		tiledefs = []

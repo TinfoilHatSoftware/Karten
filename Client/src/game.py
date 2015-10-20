@@ -8,6 +8,7 @@
 from os.path import join as jpath
 import pygame
 import timeit
+import time
 import libkarten, random
 import imp
 import conversionist
@@ -21,14 +22,14 @@ class Game(object):
 		self.fp.seek(0)
 		for line in self.fp.readlines():
 			if line.split()[0]=='resolution':
-				self.xres,self.yres=line.split('resolution', 1)[1].strip('\n').split()
+				#self.xres,self.yres=line.split('resolution', 1)[1].strip('\n').split()
+				self.xres,self.yres=(1600,900)
 		self.fp.seek(0)
-		self.yres=600
-		self.xres=800
-		self.screen=pygame.display.set_mode((int(800),int(600)),self.flags)
+		self.screen=pygame.display.set_mode((int(self.xres),int(self.yres)),self.flags)
 		self.layer1 = pygame.sprite.Group()
 		self.layer2 = pygame.sprite.Group()
 		self.layer3 = pygame.sprite.Group()
+		self.alpha_test_map=pygame.image.load('../media/alpha_darkness_1.png').convert_alpha()
 		self.layer4 = pygame.sprite.Group()
 		self.layer5 = pygame.sprite.Group()
 		self.layer1_c = []
@@ -78,15 +79,12 @@ class Game(object):
 		print(self.n+'Done.')
 	def run(self):
 		
-		self.netmgr=netwerk.ThreadedSyncManagerClient(26642,'127.0.0.1',self._netcallback)
-		self.netmgr.connect()
-		self.netmgr.run()
-		while self.map_data==None:
-			pass
 		self.yres=int(self.yres)
 		self.xres=int(self.xres)
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
-		conversionist.reverseConvertMap(self.map_data,self.c_map,self)
+		self.netmgr=netwerk.ThreadedSyncManagerClient(26642,'127.0.0.1',self._netcallback)
+		self.netmgr.connect()
+		self.netmgr.run()
 		for tile in self.c_map.tiles:
 			is_wesen=True
 			try:
@@ -98,13 +96,14 @@ class Game(object):
 		for ent in self.reqs_update:
 			try:
 				ent.go()
-			except NameError as e:
-				print(self.n+'Warning:Ent '+str(ent)+' does not have method go, ignoring.')
+			except NameError as e:	pass
+				#print(self.n+'Warning:Ent '+str(ent)+' does not have method go, ignoring.')
+		time.sleep(2)
 		self.running=True
-		self.clock.tick(60)
+		self.clock.tick(500)
 		print(self.n+'Running.')
 		while self.running:
-			delta=self.clock.tick(60)
+			delta=self.clock.tick(500)
 			mse = pygame.mouse.get_pos()
 			mpos_l=[0,0]
 			mpos_l[0],mpos_l[1]=mse
@@ -152,11 +151,21 @@ class Game(object):
 				oldrects[r]=(r.rect.x,r.rect.y)
 				r.rect.x+=self.camera_pos[0]
 				r.rect.y+=self.camera_pos[1]
-			self.layer1.draw(self.screen)
-			self.layer2.draw(self.screen)
-			self.layer3.draw(self.screen)
-			self.layer4.draw(self.screen)
-			self.layer5.draw(self.screen)
+			for sprite in self.layer1.sprites():
+				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+					self.screen.blit(sprite.image,sprite.rect)
+			for sprite in self.layer2.sprites():
+				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+					self.screen.blit(sprite.image,sprite.rect)
+			for sprite in self.layer3.sprites():
+				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+					self.screen.blit(sprite.image,sprite.rect)
+			for sprite in self.layer4.sprites():
+				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+					self.screen.blit(sprite.image,sprite.rect)
+			for sprite in self.layer5.sprites():
+				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+					self.screen.blit(sprite.image,sprite.rect)
 			for r in list(self.layer1):
 				r.rect.x,r.rect.y=oldrects[r]
 			for r in list(self.layer2):
@@ -167,6 +176,10 @@ class Game(object):
 				r.rect.x,r.rect.y=oldrects[r]
 			for r in list(self.layer5):
 				r.rect.x,r.rect.y=oldrects[r]
+			pygame.draw.rect(self.screen,(255,255,255),pygame.rect.Rect(self.camera_pos[0],self.camera_pos[1],320,320),2)
+			for tile in self.c_map.tiles:
+				if tile.rect.colliderect(pygame.rect.Rect(0,0,320,320)):
+					pygame.draw.rect(self.screen,(255,0,255),(tile.rect[0]+self.camera_pos[0],tile.rect[1]+self.camera_pos[1],32,32),2)
 			if shook==True:
 				self.camera_pos=(self.camera_pos[0]-valx,self.camera_pos[1]-valy)
 			self.game_code.update(delta,self.c_map,self)
@@ -203,13 +216,20 @@ class Game(object):
 		#print(data)
 		if self.protocol!=sender:	self.protocol=sender
 		#print("DATA:%s" % str(data))
-		if self.map_data==None:
-			self.map_data=data
-			return
 		try:
+			#print(data)
 			items=data.decode('utf8')
+			#if items[0]!='#':
+			#	print(items)
 		except:
+			#print(data)
+			conversionist.reverseConvertMap(data,self.c_map,self)
 			return
+	#	if items[0]=='<':
+		#	x=items[1:].split(' ')
+		#	rect=pygame.rect.Rect(int(x[0]),int(x[1]),int(x[2]),int(x[3]))
+	#		self.c_map.remove_rect(rect)
+	#		self.c_map.remove_rect(rect)
 		if items[0]=="#":
 			pass
 		else:
@@ -235,7 +255,11 @@ class Game(object):
 				z.append((y[0],y[1],y[2]))
 				y=[]
 			else:
-				y.append(int(x))
+				try:
+					y.append(int(x))
+				except:
+					y.append(0)
+					print('ISSUE GOIN\' ON HERE')
 			i+=1
 		items=z
 		#print(items)
@@ -256,7 +280,8 @@ class Game(object):
 		try:
 			inputv+=' *%s %s ' % (str(round(self.mouse_pos[0])),str(round(self.mouse_pos[1])))
 		except BaseException as e:
-			print(e)
+			#print(e)
+			pass
 		inputv='$'+inputv
 		return inputv.encode('utf8')
 	def add_ent_id_ref(self,ent,ent_id=None):

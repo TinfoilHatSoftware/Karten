@@ -156,6 +156,14 @@ class Karte(object):
 		return self.tiles
 	def get_tilesets_dict(self):
 		return self.tilesets
+	def remove_rect(self,rect):
+		count=0
+		for tile in self.tiles:
+			if tile.rect.colliderect(rect):
+				tile.tile_kill()
+				self.tiles.remove(tile)
+				count+=1
+		print('COUNT IS:',count)
 	def make_xml(self):
 		tsetdefs=[]
 		tiledefs=[]

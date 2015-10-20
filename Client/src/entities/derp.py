@@ -29,9 +29,10 @@ class WesenEnt(daswesen.GrafikWesenBase):
 		self.counter=0
 		self.projectiles=[]
 		self.xvel=0
+		self.alpha_test_map=pygame.image.load('../media/alpha_darkness_1.png').convert_alpha()
 		self.yvel=0
 		self.move_speed=50
-		self.max_gravity=100
+		self.max_gravity=31
 		self.jump_speed=100
 		self.frame=0
 		self.is_grounded=False
