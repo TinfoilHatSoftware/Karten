@@ -7,17 +7,17 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 class MapGenerator(object):
-	def __init__(self,ref_dict,tset,mapvar):
-		self.mapvar=mapvar
-		self.reference_table=ref_dict
-		self.tileset_name=tset
-		self.tiles_hashtab={}
+	def __init__(self, ref_dict, tset, mapvar):
+		self.mapvar = mapvar
+		self.reference_table = ref_dict
+		self.tileset_name = tset
+		self.tiles_hashtab = {}
 		self.mapvar.load_tileset(tset)
 		self.tiles_hashtab[(0,0)]=self.reference_table['base']
 		self.maxx=50*32
 		self.maxy=50*32
-		for x in range(50):
-			for y in range(50):
+		for x in range(40):
+			for y in range(40):
 				self.tiles_hashtab[(x*32,y*32)]=self.reference_table['base']
 	def add_to_map(self):
 		for m,z in enumerate(self.tiles_hashtab.items()):

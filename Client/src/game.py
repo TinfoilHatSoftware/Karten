@@ -183,7 +183,10 @@ class Game(object):
 			if shook==True:
 				self.camera_pos=(self.camera_pos[0]-valx,self.camera_pos[1]-valy)
 			self.game_code.update(delta,self.c_map,self)
-			pygame.display.update()
+			rectlist=[]
+			for sprite in self.c_map.tiles:
+				rectlist.append(sprite.rect)
+			pygame.display.flip()
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
 		print(self.n+"Changing map to "+map_name+".")
