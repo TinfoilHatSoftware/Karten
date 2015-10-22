@@ -105,6 +105,14 @@ class Game(object):
 		while self.running:
 			delta=self.clock.tick(500)
 			mse = pygame.mouse.get_pos()
+			sprites1=self.layer1.sprites()
+			sprites2=self.layer2.sprites()
+			sprites3=self.layer3.sprites()
+			sprites4=self.layer4.sprites()
+			sprites5=self.layer5.sprites()
+			screenref=self.screen
+			increasePos=self.increasePos
+			decreasePos=self.decreasePos
 			mpos_l=[0,0]
 			mpos_l[0],mpos_l[1]=mse
 			mpos_l[0]-=self.camera_pos[0]
@@ -131,57 +139,37 @@ class Game(object):
 				self.shakes-=1
 			if self.shakes==0:
 				self.shaking=False
-			for r in list(self.layer1):
-				oldrects[r]=(r.rect.x,r.rect.y)
-				r.rect.x+=self.camera_pos[0]
-				r.rect.y+=self.camera_pos[1]
-			for r in list(self.layer2):
-				oldrects[r]=(r.rect.x,r.rect.y)
-				r.rect.x+=self.camera_pos[0]
-				r.rect.y+=self.camera_pos[1]
-			for r in list(self.layer3):
-				oldrects[r]=(r.rect.x,r.rect.y)
-				r.rect.x+=self.camera_pos[0]
-				r.rect.y+=self.camera_pos[1]
-			for r in list(self.layer4):
-				oldrects[r]=(r.rect.x,r.rect.y)
-				r.rect.x+=self.camera_pos[0]
-				r.rect.y+=self.camera_pos[1]
-			for r in list(self.layer5):
-				oldrects[r]=(r.rect.x,r.rect.y)
-				r.rect.x+=self.camera_pos[0]
-				r.rect.y+=self.camera_pos[1]
-			sprites1=self.layer1.sprites()
-			sprites2=self.layer2.sprites()
-			sprites3=self.layer3.sprites()
-			sprites4=self.layer4.sprites()
-			sprites5=self.layer5.sprites()
-			screenref=self.screen
-			for sprite in sprites1:
-				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					screenref.blit(sprite.image,sprite.rect)
-			for sprite in sprites2:
-				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					screenref.blit(sprite.image,sprite.rect)
-			for sprite in sprites3:
-				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					screenref.blit(sprite.image,sprite.rect)
-			for sprite in sprites4:
-				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					screenref.blit(sprite.image,sprite.rect)
-			for sprite in sprites5:
-				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					screenref.blit(sprite.image,sprite.rect)
-			for r in list(self.layer1):
-				r.rect.x,r.rect.y=oldrects[r]
-			for r in list(self.layer2):
-				r.rect.x,r.rect.y=oldrects[r]
-			for r in list(self.layer3):
-				r.rect.x,r.rect.y=oldrects[r]
-			for r in list(self.layer4):
-				r.rect.x,r.rect.y=oldrects[r]
-			for r in list(self.layer5):
-				r.rect.x,r.rect.y=oldrects[r]
+			t1=timeit.default_timer()
+			#for r in list(self.layer3):
+			#	oldrects[r]=(r.rect.x,r.rect.y)
+			#	r.rect.x+=self.camera_pos[0]
+			#	r.rect.y+=self.camera_pos[1]
+			foo=list(map(increasePos,sprites1,sprites2,sprites3,sprites4,sprites5))
+			t2=timeit.default_timer()
+			if sprites1!=[]:
+				for sprite in sprites1:
+					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+						screenref.blit(sprite.image,sprite.rect)
+			if sprites2!=[]:
+				for sprite in sprites2:
+					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+						screenref.blit(sprite.image,sprite.rect)
+			if sprites3!=[]:
+				for sprite in sprites3:
+					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+						screenref.blit(sprite.image,sprite.rect)
+			if sprites4!=[]:
+				for sprite in sprites4:
+					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+						screenref.blit(sprite.image,sprite.rect)
+			if sprites5!=[]:
+				for sprite in sprites5:
+					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
+						screenref.blit(sprite.image,sprite.rect)
+			#print(t2-t1)
+			#for r in list(self.layer3):
+			#	r.rect.x,r.rect.y=oldrects[r]
+			foo=list(map(decreasePos,sprites1,sprites2,sprites3,sprites4,sprites5))
 			pygame.draw.rect(self.screen,(255,255,255),pygame.rect.Rect(self.camera_pos[0],self.camera_pos[1],320,320),2)
 			for tile in self.c_map.tiles:
 				if tile.rect.colliderect(pygame.rect.Rect(0,0,320,320)):
@@ -189,9 +177,6 @@ class Game(object):
 			if shook==True:
 				self.camera_pos=(self.camera_pos[0]-valx,self.camera_pos[1]-valy)
 			self.game_code.update(delta,self.c_map,self)
-			rectlist=[]
-			for sprite in self.c_map.tiles:
-				rectlist.append(sprite.rect)
 			pygame.display.flip()
 		print(self.n+"Runloop stopped.")
 	def change_map(self,map_name):
@@ -307,7 +292,31 @@ class Game(object):
 		self.shakes=numshakes
 		self.shakesize=shakesize
 		self.shaking=True
-		
+	def increasePos(self,x1,x2,x3,x4,x5):
+		print(x1,x2,x3,x4,x5)
+		x1.rect.x+=self.camera_pos[0]
+		x1.rect.y+=self.camera_pos[1]
+		x2.rect.x+=self.camera_pos[0]
+		x2.rect.y+=self.camera_pos[1]
+		x3.rect.x+=self.camera_pos[0]
+		x3.rect.y+=self.camera_pos[1]
+		x4.rect.x+=self.camera_pos[0]
+		x4.rect.y+=self.camera_pos[1]
+		x5.rect.x+=self.camera_pos[0]
+		x5.rect.y+=self.camera_pos[1]
+		#print('increasePossing')
+	def decreasePos(self,x1,x2,x3,x4,x5):
+		x1.rect.x-=self.camera_pos[0]
+		x1.rect.y-=self.camera_pos[1]
+		x2.rect.x-=self.camera_pos[0]
+		x2.rect.y-=self.camera_pos[1]
+		x3.rect.x-=self.camera_pos[0]
+		x3.rect.y-=self.camera_pos[1]
+		x4.rect.x-=self.camera_pos[0]
+		x4.rect.y-=self.camera_pos[1]
+		x5.rect.x-=self.camera_pos[0]
+		x5.rect.y-=self.camera_pos[1]
+		#print('decreasePossing')
 		
 		
 		
