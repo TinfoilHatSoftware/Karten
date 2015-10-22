@@ -151,21 +151,27 @@ class Game(object):
 				oldrects[r]=(r.rect.x,r.rect.y)
 				r.rect.x+=self.camera_pos[0]
 				r.rect.y+=self.camera_pos[1]
-			for sprite in self.layer1.sprites():
+			sprites1=self.layer1.sprites()
+			sprites2=self.layer2.sprites()
+			sprites3=self.layer3.sprites()
+			sprites4=self.layer4.sprites()
+			sprites5=self.layer5.sprites()
+			screenref=self.screen
+			for sprite in sprites1:
 				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					self.screen.blit(sprite.image,sprite.rect)
-			for sprite in self.layer2.sprites():
+					screenref.blit(sprite.image,sprite.rect)
+			for sprite in sprites2:
 				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					self.screen.blit(sprite.image,sprite.rect)
-			for sprite in self.layer3.sprites():
+					screenref.blit(sprite.image,sprite.rect)
+			for sprite in sprites3:
 				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					self.screen.blit(sprite.image,sprite.rect)
-			for sprite in self.layer4.sprites():
+					screenref.blit(sprite.image,sprite.rect)
+			for sprite in sprites4:
 				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					self.screen.blit(sprite.image,sprite.rect)
-			for sprite in self.layer5.sprites():
+					screenref.blit(sprite.image,sprite.rect)
+			for sprite in sprites5:
 				if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-					self.screen.blit(sprite.image,sprite.rect)
+					screenref.blit(sprite.image,sprite.rect)
 			for r in list(self.layer1):
 				r.rect.x,r.rect.y=oldrects[r]
 			for r in list(self.layer2):
