@@ -1,5 +1,5 @@
 #  game.py
-#  
+#
 #  Copyright 2014 Jacob Swart
 #
 #  This program is distributed in the hope that it will be useful,
@@ -29,9 +29,9 @@ class Game(object):
 		self.layer1 = pygame.sprite.Group()
 		self.layer2 = pygame.sprite.Group()
 		self.layer3 = pygame.sprite.Group()
-		self.alpha_test_map=pygame.image.load('../media/alpha_darkness_1.png').convert_alpha()
 		self.layer4 = pygame.sprite.Group()
 		self.layer5 = pygame.sprite.Group()
+		self.alpha_test_map=pygame.image.load('../media/alpha_darkness_1.png').convert_alpha()
 		self.layer1_c = []
 		self.layer2_c = []
 		self.layer3_c = []
@@ -78,9 +78,13 @@ class Game(object):
 		self.camera_pos=(0,0)
 		print(self.n+'Done.')
 	def run(self):
-		
-		self.yres=int(self.yres)
-		self.xres=int(self.xres)
+		# Avoid dot lookups; they're slow
+		yres = self.yres
+		xres = self.xres
+		screenref = self.screen
+		increasePos = self.increasePos
+		decreasePos = self.decreasePos
+
 		self.c_map=libkarten.Karte([self.layer1,self.layer2,self.layer3,self.layer4,self.layer5],[self.layer1_c,self.layer2_c,self.layer3_c,self.layer4_c,self.layer5_c],self.reqs_update)
 		self.netmgr=netwerk.ThreadedSyncManagerClient(26642,'127.0.0.1',self._netcallback)
 		self.netmgr.connect()
@@ -110,15 +114,12 @@ class Game(object):
 			sprites3=self.layer3.sprites()
 			sprites4=self.layer4.sprites()
 			sprites5=self.layer5.sprites()
-			screenref=self.screen
-			increasePos=self.increasePos
-			decreasePos=self.decreasePos
 			mpos_l=[0,0]
 			mpos_l[0],mpos_l[1]=mse
-			mpos_l[0]-=self.camera_pos[0]
-			mpos_l[1]-=self.camera_pos[1]
+			mpos_l[0] -= self.camera_pos[0]
+			mpos_l[1] -= self.camera_pos[1]
 			self.mouse_pos=(mpos_l[0],mpos_l[1])
-			self.screen.fill((0,0,0))
+			screenref.fill((0,0,0))
 			for e in pygame.event.get(pygame.QUIT):
 				if e.type == pygame.QUIT:
 					self.running = False
@@ -130,7 +131,7 @@ class Game(object):
 			oldrects={}
 			shook=False
 			if self.locking==True:
-				self.camera_pos=(-self.entrectref().center[0]+self.xres/2,-self.entrectref().center[1]+self.yres/2)
+				self.camera_pos=(-self.entrectref().center[0]+(xres/2),-self.entrectref().center[1]+(yres/2))
 			if self.shaking and self.shakes>0:
 				valy=int(random.uniform(-1.0,1.0)*self.shakesize)
 				valx=int(random.uniform(-1.0,1.0)*self.shakesize)
@@ -144,38 +145,43 @@ class Game(object):
 			#	oldrects[r]=(r.rect.x,r.rect.y)
 			#	r.rect.x+=self.camera_pos[0]
 			#	r.rect.y+=self.camera_pos[1]
-			foo=list(map(increasePos,sprites1,sprites2,sprites3,sprites4,sprites5))
+			cposx, cposy = self.camera_pos
+			for group in zip(sprites1, sprites2, sprites3, sprites4, sprites5):
+				increasePos(*group, cposx=cposx, cposy=cposy)
 			t2=timeit.default_timer()
-			if sprites1!=[]:
-				for sprite in sprites1:
-					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-						screenref.blit(sprite.image,sprite.rect)
-			if sprites2!=[]:
-				for sprite in sprites2:
-					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-						screenref.blit(sprite.image,sprite.rect)
-			if sprites3!=[]:
-				for sprite in sprites3:
-					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-						screenref.blit(sprite.image,sprite.rect)
-			if sprites4!=[]:
-				for sprite in sprites4:
-					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-						screenref.blit(sprite.image,sprite.rect)
-			if sprites5!=[]:
-				for sprite in sprites5:
-					if sprite.rect.colliderect((0,0,self.xres,self.yres)):
-						screenref.blit(sprite.image,sprite.rect)
-			#print(t2-t1)
+
+			screfblit = screenref.blit
+			for sprite in sprites1:
+				if sprite.rect.colliderect((0,0,xres,yres)):
+					screfblit(sprite.image,sprite.rect)
+
+			for sprite in sprites2:
+				if sprite.rect.colliderect((0,0,xres,yres)):
+					screfblit(sprite.image,sprite.rect)
+
+			for sprite in sprites3:
+				if sprite.rect.colliderect((0,0,xres,yres)):
+					screfblit(sprite.image,sprite.rect)
+
+			for sprite in sprites4:
+				if sprite.rect.colliderect((0,0,xres,yres)):
+					screfblit(sprite.image,sprite.rect)
+
+			for sprite in sprites5:
+				if sprite.rect.colliderect((0,0,xres,yres)):
+					screfblit(sprite.image,sprite.rect)
+
+			print(t2-t1)
 			#for r in list(self.layer3):
 			#	r.rect.x,r.rect.y=oldrects[r]
-			foo=list(map(decreasePos,sprites1,sprites2,sprites3,sprites4,sprites5))
-			pygame.draw.rect(self.screen,(255,255,255),pygame.rect.Rect(self.camera_pos[0],self.camera_pos[1],320,320),2)
+			for group in zip(sprites1, sprites2, sprites3, sprites4, sprites5):
+				increasePos(*group, cposx=cposx, cposy=cposy)
+			pygame.draw.rect(screenref,(255,255,255),pygame.rect.Rect(cposx,cposy,320,320),2)
 			for tile in self.c_map.tiles:
 				if tile.rect.colliderect(pygame.rect.Rect(0,0,320,320)):
-					pygame.draw.rect(self.screen,(255,0,255),(tile.rect[0]+self.camera_pos[0],tile.rect[1]+self.camera_pos[1],32,32),2)
-			if shook==True:
-				self.camera_pos=(self.camera_pos[0]-valx,self.camera_pos[1]-valy)
+					pygame.draw.rect(screenref,(255,0,255),(tile.rect[0]+cposx,tile.rect[1]+cposy,32,32),2)
+			if shook:
+				self.camera_pos = (cposx - valx, cposy - valy)
 			self.game_code.update(delta,self.c_map,self)
 			pygame.display.flip()
 		print(self.n+"Runloop stopped.")
@@ -193,7 +199,7 @@ class Game(object):
 		self.layer5_c = []
 		self.reqs_update=[]
 		try:
-			if self.c_map!=None:
+			if self.c_map:
 				self.c_map.uninitialize(self.c_map)
 				self.c_map=None
 		except NameError as e:
@@ -224,18 +230,17 @@ class Game(object):
 		#	rect=pygame.rect.Rect(int(x[0]),int(x[1]),int(x[2]),int(x[3]))
 	#		self.c_map.remove_rect(rect)
 	#		self.c_map.remove_rect(rect)
-		if items[0]=="#":
+		if items[0]=='#':
 			pass
+		elif items[0]=='@':
+			x=items[1:].split(' ')
+			print(x)
+			self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self,int(x[4]))
+			return
 		else:
-			if items[0]=='@':
-				x=items[1:].split(' ')
-				print(x)
-				self.c_map.loadWesenWithID(x[0],(int(x[1]),int(x[2])),self.reqs_update,int(x[3]),self,int(x[4]))
-				return
-			else:	
-				self.id_num=int(items)
-				print(self.n+"Current ID:"+str(self.id_num))
-				return
+			self.id_num=int(items)
+			print(self.n+"Current ID:"+str(self.id_num))
+			return
 		items=items[1:]
 		items=items.split(" ")
 		i=1
@@ -292,32 +297,28 @@ class Game(object):
 		self.shakes=numshakes
 		self.shakesize=shakesize
 		self.shaking=True
-	def increasePos(self,x1,x2,x3,x4,x5):
+	def increasePos(self,x1,x2,x3,x4,x5, cposx=0, cposy=0):
 		print(x1,x2,x3,x4,x5)
-		x1.rect.x+=self.camera_pos[0]
-		x1.rect.y+=self.camera_pos[1]
-		x2.rect.x+=self.camera_pos[0]
-		x2.rect.y+=self.camera_pos[1]
-		x3.rect.x+=self.camera_pos[0]
-		x3.rect.y+=self.camera_pos[1]
-		x4.rect.x+=self.camera_pos[0]
-		x4.rect.y+=self.camera_pos[1]
-		x5.rect.x+=self.camera_pos[0]
-		x5.rect.y+=self.camera_pos[1]
+		x1.rect.x+=cposx
+		x1.rect.y+=cposy
+		x2.rect.x+=cposx
+		x2.rect.y+=cposy
+		x3.rect.x+=cposx
+		x3.rect.y+=cposy
+		x4.rect.x+=cposx
+		x4.rect.y+=cposy
+		x5.rect.x+=cposx
+		x5.rect.y+=cposy
 		#print('increasePossing')
-	def decreasePos(self,x1,x2,x3,x4,x5):
-		x1.rect.x-=self.camera_pos[0]
-		x1.rect.y-=self.camera_pos[1]
-		x2.rect.x-=self.camera_pos[0]
-		x2.rect.y-=self.camera_pos[1]
-		x3.rect.x-=self.camera_pos[0]
-		x3.rect.y-=self.camera_pos[1]
-		x4.rect.x-=self.camera_pos[0]
-		x4.rect.y-=self.camera_pos[1]
-		x5.rect.x-=self.camera_pos[0]
-		x5.rect.y-=self.camera_pos[1]
+	def decreasePos(self,x1,x2,x3,x4,x5, cposx=0, cposy=0):
+		x1.rect.x-=cposx
+		x1.rect.y-=cposy
+		x2.rect.x-=cposx
+		x2.rect.y-=cposy
+		x3.rect.x-=cposx
+		x3.rect.y-=cposy
+		x4.rect.x-=cposx
+		x4.rect.y-=cposy
+		x5.rect.x-=cposx
+		x5.rect.y-=cposy
 		#print('decreasePossing')
-		
-		
-		
-		
