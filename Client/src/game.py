@@ -9,6 +9,7 @@ from os.path import join as jpath
 import pygame
 import timeit
 import time
+from itertools import zip_longest
 import libkarten, random
 import imp
 import conversionist
@@ -146,7 +147,7 @@ class Game(object):
 			#	r.rect.x+=self.camera_pos[0]
 			#	r.rect.y+=self.camera_pos[1]
 			cposx, cposy = self.camera_pos
-			for group in zip(sprites1, sprites2, sprites3, sprites4, sprites5):
+			for group in zip_longest(sprites1, sprites2, sprites3, sprites4, sprites5):
 				increasePos(*group, cposx=cposx, cposy=cposy)
 			t2=timeit.default_timer()
 
@@ -174,7 +175,7 @@ class Game(object):
 			print(t2-t1)
 			#for r in list(self.layer3):
 			#	r.rect.x,r.rect.y=oldrects[r]
-			for group in zip(sprites1, sprites2, sprites3, sprites4, sprites5):
+			for group in zip_longest(sprites1, sprites2, sprites3, sprites4, sprites5):
 				increasePos(*group, cposx=cposx, cposy=cposy)
 			pygame.draw.rect(screenref,(255,255,255),pygame.rect.Rect(cposx,cposy,320,320),2)
 			for tile in self.c_map.tiles:
@@ -298,27 +299,37 @@ class Game(object):
 		self.shakesize=shakesize
 		self.shaking=True
 	def increasePos(self,x1,x2,x3,x4,x5, cposx=0, cposy=0):
-		print(x1,x2,x3,x4,x5)
-		x1.rect.x+=cposx
-		x1.rect.y+=cposy
-		x2.rect.x+=cposx
-		x2.rect.y+=cposy
-		x3.rect.x+=cposx
-		x3.rect.y+=cposy
-		x4.rect.x+=cposx
-		x4.rect.y+=cposy
-		x5.rect.x+=cposx
-		x5.rect.y+=cposy
+		#print(x1,x2,x3,x4,x5)
+		if x1:
+			x1.rect.x+=cposx
+			x1.rect.y+=cposy
+		if x2:
+			x2.rect.x+=cposx
+			x2.rect.y+=cposy
+		if x3:
+			x3.rect.x+=cposx
+			x3.rect.y+=cposy
+		if x4:
+			x4.rect.x+=cposx
+			x4.rect.y+=cposy
+		if x5:
+			x5.rect.x+=cposx
+			x5.rect.y+=cposy
 		#print('increasePossing')
 	def decreasePos(self,x1,x2,x3,x4,x5, cposx=0, cposy=0):
-		x1.rect.x-=cposx
-		x1.rect.y-=cposy
-		x2.rect.x-=cposx
-		x2.rect.y-=cposy
-		x3.rect.x-=cposx
-		x3.rect.y-=cposy
-		x4.rect.x-=cposx
-		x4.rect.y-=cposy
-		x5.rect.x-=cposx
-		x5.rect.y-=cposy
+		if x1:
+			x1.rect.x-=cposx
+			x1.rect.y-=cposy
+		if x2:
+			x2.rect.x-=cposx
+			x2.rect.y-=cposy
+		if x3:
+			x3.rect.x-=cposx
+			x3.rect.y-=cposy
+		if x4:
+			x4.rect.x-=cposx
+			x4.rect.y-=cposy
+		if x5:
+			x5.rect.x-=cposx
+			x5.rect.y-=cposy
 		#print('decreasePossing')
